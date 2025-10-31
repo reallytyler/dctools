@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permissions Calculator - DiscordTools</title>
+    <link rel="icon" href="https://discordlookup.com/images/branding/favicon/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.cdnfonts.com/css/gg-sans-2');
+        :root {
+            --bg-primary: #36393f; --bg-secondary: #2f3136; --bg-accent: #40444b;
+            --text-normal: #dcddde; --text-muted: #72767d; --text-link: #00aff4;
+            --brand: #5865f2; --brand-hover: #4752c4; --green: #3ba55c; --red: #ed4245;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'gg sans', sans-serif; background: var(--bg-primary); color: var(--text-normal); line-height: 1.6; }
+        .navbar { background: var(--bg-secondary); padding: 1rem 2rem; border-bottom: 1px solid var(--bg-accent); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .logo { display: flex; align-items: center; gap: 12px; color: white; text-decoration: none; font-weight: bold; font-size: 1.5rem; }
+        .logo-gradient { background: linear-gradient(90deg, #5865f2, #eb459e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .nav-links { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
+        .nav-link { color: var(--text-muted); text-decoration: none; transition: all 0.2s ease; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 6px; }
+        .nav-link:hover, .nav-link.active { color: white; background: var(--bg-accent); }
+        .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+        .tool-header { text-align: center; margin-bottom: 3rem; }
+        .tool-header h1 { font-size: 2.5rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 1rem; }
+        .tool-header h1 i { color: var(--brand); }
+        .tool-section { background: var(--bg-secondary); border-radius: 12px; padding: 2rem; margin: 2rem 0; border: 1px solid var(--bg-accent); }
+        .input-group { margin-bottom: 1.5rem; }
+        .input-group label { display: block; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+        .input { width: 100%; padding: 1rem; border: 2px solid var(--bg-accent); border-radius: 8px; background: var(--bg-primary); color: var(--text-normal); font-size: 1rem; outline: none; }
+        .input:focus { border-color: var(--brand); }
+        .permissions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; margin: 1rem 0; }
+        .permission-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
+        .permission-item:hover { background: var(--bg-accent); }
+        .permission-item input { margin: 0; }
+        .btn { padding: 1rem 2rem; background: var(--brand); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s; }
+        .btn:hover { background: var(--brand-hover); }
+        .results { margin-top: 2rem; }
+        .result-card { background: var(--bg-accent); padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--brand); margin-bottom: 1rem; }
+        .result-label { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; font-weight: 600; }
+        .result-value { color: white; font-weight: 600; font-size: 1rem; font-family: monospace; }
+        .footer { text-align: center; padding: 3rem 0; color: var(--text-muted); border-top: 1px solid var(--bg-accent); margin-top: 4rem; }
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; text-align: center; }
+            .container { padding: 1rem; }
+            .permissions-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo"><i class="fab fa-discord"></i><span class="logo-gradient">DiscordTools</span></a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link"><i class="fas fa-arrow-left"></i>Back to Tools</a>
+            <a href="https://discord.gg/EsznpytuYT" class="nav-link" target="_blank"><i class="fab fa-discord"></i>Discord</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <h1><i class="fas fa-shield-alt"></i> Permissions Calculator</h1>
+            <p style="color: var(--text-muted);">Calculate and decode Discord permission integers for bots and roles</p>
+        </div>
+
+        <div class="tool-section">
+            <div class="input-group">
+                <label><i class="fas fa-hashtag"></i> Permission Integer</label>
+                <input type="text" class="input" id="permissionInput" placeholder="Enter permission integer (e.g., 8 for Administrator)">
+            </div>
+
+            <button class="btn" onclick="calculateFromInteger()">
+                <i class="fas fa-calculator"></i> Calculate from Integer
+            </button>
+
+            <div class="input-group">
+                <label><i class="fas fa-check-square"></i> Select Permissions</label>
+                <div class="permissions-grid" id="permissionsList">
+                    <!-- Permissions will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <button class="btn" onclick="calculateFromSelection()">
+                <i class="fas fa-calculator"></i> Calculate from Selection
+            </button>
+
+            <div class="results" id="results" style="display: none;">
+                <div class="result-card">
+                    <div class="result-label"><i class="fas fa-hashtag"></i> Permission Integer</div>
+                    <div class="result-value" id="permissionInteger">0</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label"><i class="fas fa-binary"></i> Binary</div>
+                    <div class="result-value" id="permissionBinary">0</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label"><i class="fas fa-list"></i> Selected Permissions</div>
+                    <div class="result-value" id="selectedPermissions">None</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>DiscordTools is not affiliated with Discord Inc. &copy; 2025</p>
+        <p>Permissions Calculator - Manage Discord permission integers</p>
+    </footer>
+
+    <script>
+        const permissions = {
+            "CREATE_INSTANT_INVITE": 1n << 0n,
+            "KICK_MEMBERS": 1n << 1n,
+            "BAN_MEMBERS": 1n << 2n,
+            "ADMINISTRATOR": 1n << 3n,
+            "MANAGE_CHANNELS": 1n << 4n,
+            "MANAGE_GUILD": 1n << 5n,
+            "ADD_REACTIONS": 1n << 6n,
+            "VIEW_AUDIT_LOG": 1n << 7n,
+            "PRIORITY_SPEAKER": 1n << 8n,
+            "STREAM": 1n << 9n,
+            "VIEW_CHANNEL": 1n << 10n,
+            "SEND_MESSAGES": 1n << 11n,
+            "SEND_TTS_MESSAGES": 1n << 12n,
+            "MANAGE_MESSAGES": 1n << 13n,
+            "EMBED_LINKS": 1n << 14n,
+            "ATTACH_FILES": 1n << 15n,
+            "READ_MESSAGE_HISTORY": 1n << 16n,
+            "MENTION_EVERYONE": 1n << 17n,
+            "USE_EXTERNAL_EMOJIS": 1n << 18n,
+            "VIEW_GUILD_INSIGHTS": 1n << 19n,
+            "CONNECT": 1n << 20n,
+            "SPEAK": 1n << 21n,
+            "MUTE_MEMBERS": 1n << 22n,
+            "DEAFEN_MEMBERS": 1n << 23n,
+            "MOVE_MEMBERS": 1n << 24n,
+            "USE_VAD": 1n << 25n,
+            "CHANGE_NICKNAME": 1n << 26n,
+            "MANAGE_NICKNAMES": 1n << 27n,
+            "MANAGE_ROLES": 1n << 28n,
+            "MANAGE_WEBHOOKS": 1n << 29n,
+            "MANAGE_EMOJIS_AND_STICKERS": 1n << 30n,
+            "USE_APPLICATION_COMMANDS": 1n << 31n,
+            "REQUEST_TO_SPEAK": 1n << 32n,
+            "MANAGE_EVENTS": 1n << 33n,
+            "MANAGE_THREADS": 1n << 34n,
+            "CREATE_PUBLIC_THREADS": 1n << 35n,
+            "CREATE_PRIVATE_THREADS": 1n << 36n,
+            "USE_EXTERNAL_STICKERS": 1n << 37n,
+            "SEND_MESSAGES_IN_THREADS": 1n << 38n,
+            "USE_EMBEDDED_ACTIVITIES": 1n << 39n,
+            "MODERATE_MEMBERS": 1n << 40n
+        };
+
+        function initializePermissions() {
+            const container = document.getElementById('permissionsList');
+            let html = '';
+            
+            for (const [name, value] of Object.entries(permissions)) {
+                const readableName = name.toLowerCase().replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                html += `
+                    <div class="permission-item">
+                        <input type="checkbox" id="perm_${name}" value="${value}">
+                        <label for="perm_${name}">${readableName}</label>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function calculateFromInteger() {
+            const input = document.getElementById('permissionInput').value.trim();
+            if (!input) {
+                alert('Please enter a permission integer');
+                return;
+            }
+
+            try {
+                const permissionInt = BigInt(input);
+                const binary = permissionInt.toString(2);
+                const selectedPerms = [];
+
+                for (const [name, value] of Object.entries(permissions)) {
+                    if (permissionInt & value) {
+                        const readableName = name.toLowerCase().replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                        selectedPerms.push(readableName);
+                        
+                        // Update checkbox
+                        const checkbox = document.getElementById(`perm_${name}`);
+                        if (checkbox) checkbox.checked = true;
+                    }
+                }
+
+                document.getElementById('permissionInteger').textContent = permissionInt.toString();
+                document.getElementById('permissionBinary').textContent = binary.padStart(64, '0');
+                document.getElementById('selectedPermissions').textContent = selectedPerms.length > 0 ? selectedPerms.join(', ') : 'None';
+                document.getElementById('results').style.display = 'block';
+            } catch (error) {
+                alert('Error calculating permissions: ' + error.message);
+            }
+        }
+
+        function calculateFromSelection() {
+            let permissionInt = 0n;
+            const selectedPerms = [];
+
+            for (const [name, value] of Object.entries(permissions)) {
+                const checkbox = document.getElementById(`perm_${name}`);
+                if (checkbox && checkbox.checked) {
+                    permissionInt |= value;
+                    const readableName = name.toLowerCase().replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    selectedPerms.push(readableName);
+                }
+            }
+
+            const binary = permissionInt.toString(2);
+            
+            document.getElementById('permissionInput').value = permissionInt.toString();
+            document.getElementById('permissionInteger').textContent = permissionInt.toString();
+            document.getElementById('permissionBinary').textContent = binary.padStart(64, '0');
+            document.getElementById('selectedPermissions').textContent = selectedPerms.length > 0 ? selectedPerms.join(', ') : 'None';
+            document.getElementById('results').style.display = 'block';
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initializePermissions);
+    </script>
+</body>
+</html>
