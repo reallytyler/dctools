@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Encoder/Decoder - DiscordTools</title>
+    <link rel="icon" href="https://discordlookup.com/images/branding/favicon/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.cdnfonts.com/css/gg-sans-2');
+        :root {
+            --bg-primary: #36393f; --bg-secondary: #2f3136; --bg-accent: #40444b;
+            --text-normal: #dcddde; --text-muted: #72767d; --text-link: #00aff4;
+            --brand: #5865f2; --brand-hover: #4752c4; --green: #3ba55c; --red: #ed4245;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'gg sans', sans-serif; background: var(--bg-primary); color: var(--text-normal); line-height: 1.6; }
+        .navbar { background: var(--bg-secondary); padding: 1rem 2rem; border-bottom: 1px solid var(--bg-accent); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .logo { display: flex; align-items: center; gap: 12px; color: white; text-decoration: none; font-weight: bold; font-size: 1.5rem; }
+        .logo-gradient { background: linear-gradient(90deg, #5865f2, #eb459e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .nav-links { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
+        .nav-link { color: var(--text-muted); text-decoration: none; transition: all 0.2s ease; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 6px; }
+        .nav-link:hover, .nav-link.active { color: white; background: var(--bg-accent); }
+        .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+        .tool-header { text-align: center; margin-bottom: 3rem; }
+        .tool-header h1 { font-size: 2.5rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 1rem; }
+        .tool-header h1 i { color: var(--brand); }
+        .tool-section { background: var(--bg-secondary); border-radius: 12px; padding: 2rem; margin: 2rem 0; border: 1px solid var(--bg-accent); }
+        .input-group { margin-bottom: 1.5rem; }
+        .input-group label { display: block; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+        .textarea { width: 100%; min-height: 150px; padding: 1rem; border: 2px solid var(--bg-accent); border-radius: 8px; background: var(--bg-primary); color: var(--text-normal); font-family: monospace; resize: vertical; outline: none; }
+        .textarea:focus { border-color: var(--brand); }
+        .button-group { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+        .btn { padding: 1rem 2rem; background: var(--brand); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s; }
+        .btn:hover { background: var(--brand-hover); }
+        .btn-secondary { background: var(--bg-accent); }
+        .btn-secondary:hover { background: var(--text-muted); }
+        .preview { background: var(--bg-primary); border: 2px solid var(--bg-accent); border-radius: 8px; padding: 1rem; margin-top: 1rem; min-height: 100px; }
+        .footer { text-align: center; padding: 3rem 0; color: var(--text-muted); border-top: 1px solid var(--bg-accent); margin-top: 4rem; }
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; text-align: center; }
+            .container { padding: 1rem; }
+            .button-group { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo"><i class="fab fa-discord"></i><span class="logo-gradient">DiscordTools</span></a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link"><i class="fas fa-arrow-left"></i>Back to Tools</a>
+            <a href="https://discord.gg/EsznpytuYT" class="nav-link" target="_blank"><i class="fab fa-discord"></i>Discord</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <h1><i class="fas fa-code"></i> HTML Encoder/Decoder</h1>
+            <p style="color: var(--text-muted);">Encode and decode HTML entities to prevent XSS and display special characters safely</p>
+        </div>
+
+        <div class="tool-section">
+            <div class="input-group">
+                <label><i class="fas fa-pencil-alt"></i> Input Text/HTML</label>
+                <textarea class="textarea" id="inputText" placeholder="Enter text or HTML to encode/decode..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn" onclick="encodeHTML()">
+                    <i class="fas fa-lock"></i> Encode HTML
+                </button>
+                <button class="btn" onclick="decodeHTML()">
+                    <i class="fas fa-lock-open"></i> Decode HTML
+                </button>
+                <button class="btn" onclick="encodeAttribute()">
+                    <i class="fas fa-code"></i> Encode Attribute
+                </button>
+                <button class="btn btn-secondary" onclick="clearText()">
+                    <i class="fas fa-eraser"></i> Clear
+                </button>
+                <button class="btn btn-secondary" onclick="copyResult()">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
+            </div>
+
+            <div class="input-group">
+                <label><i class="fas fa-code"></i> Result</label>
+                <textarea class="textarea" id="outputText" placeholder="Result will appear here..." readonly></textarea>
+            </div>
+
+            <div class="input-group">
+                <label><i class="fas fa-eye"></i> Live Preview</label>
+                <div class="preview" id="preview">
+                    Preview will appear here...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>DiscordTools is not affiliated with Discord Inc. &copy; 2025</p>
+        <p>HTML Encoder/Decoder - Handle HTML entities safely</p>
+    </footer>
+
+    <script>
+        const htmlEntities = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;',
+            '`': '&#96;',
+            '=': '&#61;',
+            '/': '&#47;'
+        };
+
+        const attributeEntities = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        };
+
+        function encodeHTML() {
+            const input = document.getElementById('inputText').value;
+            if (!input) {
+                alert('Please enter text to encode');
+                return;
+            }
+
+            const encoded = input.replace(/[&<>"'`=\/]/g, char => htmlEntities[char]);
+            document.getElementById('outputText').value = encoded;
+            updatePreview(encoded);
+        }
+
+        function decodeHTML() {
+            const input = document.getElementById('inputText').value;
+            if (!input) {
+                alert('Please enter HTML to decode');
+                return;
+            }
+
+            const textarea = document.createElement('textarea');
+            textarea.innerHTML = input;
+            const decoded = textarea.value;
+            
+            document.getElementById('outputText').value = decoded;
+            updatePreview(decoded);
+        }
+
+        function encodeAttribute() {
+            const input = document.getElementById('inputText').value;
+            if (!input) {
+                alert('Please enter text to encode');
+                return;
+            }
+
+            const encoded = input.replace(/[&<>"']/g, char => attributeEntities[char]);
+            document.getElementById('outputText').value = encoded;
+            updatePreview(encoded);
+        }
+
+        function clearText() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('outputText').value = '';
+            document.getElementById('preview').innerHTML = 'Preview will appear here...';
+        }
+
+        function copyResult() {
+            const output = document.getElementById('outputText');
+            if (!output.value) {
+                alert('No result to copy');
+                return;
+            }
+            output.select();
+            document.execCommand('copy');
+            alert('Copied to clipboard!');
+        }
+
+        function updatePreview(content) {
+            const preview = document.getElementById('preview');
+            try {
+                preview.innerHTML = content;
+            } catch (error) {
+                preview.textContent = 'Error in preview: ' + error.message;
+            }
+        }
+
+        // Example content
+        document.addEventListener('DOMContentLoaded', () => {
+            const exampleHTML = `<div class="example">
+    <h1>Welcome to HTML Encoder!</h1>
+    <p>This tool helps prevent <strong>XSS attacks</strong> by encoding special characters.</p>
+    <script>alert('This would be dangerous!');<\/script>
+</div>`;
+            
+            document.getElementById('inputText').value = exampleHTML;
+        });
+    </script>
+</body>
+</html>
