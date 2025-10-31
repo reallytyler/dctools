@@ -37,6 +37,9 @@ A comprehensive collection of Discord utilities and developer tools built with m
 - **Unit Converter** - Convert between different measurement units
 - **QR Code Generator** - Generate QR codes from text or URLs
 
+
+# ✨ Inspirations
+- **Discord Lookup** 
 ## 🚀 Quick Start
 
 ### Online Usage
