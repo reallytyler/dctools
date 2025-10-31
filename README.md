@@ -42,6 +42,8 @@ A comprehensive collection of Discord utilities and developer tools built with m
 - **[Discord Lookup/Unofficial Discord Lookup](https://discord.id/)** 
 - **[Base64 Decode+Encode](https://www.base64decode.org/)** 
 - **[URL Decoder/Encoder](https://meyerweb.com/eric/tools/dencoder/)** 
+- **[Timestamp Generator](https://r.3v.fi/discord-timestamps/)** 
+- **[Free Online Calculator](https://www.calculator.net/** 
 
 ## 🚀 Quick Start
 
