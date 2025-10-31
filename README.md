@@ -39,11 +39,14 @@ A comprehensive collection of Discord utilities and developer tools built with m
 
 
 # ✨ Inspirations
-- **Discord Lookup** 
-## 🚀 Quick Start
+- **[Discord Lookup](https://discordlookup.com/)** 
+- **[Discord Lookup/Unofficial Discord Lookup](https://discord.id/)** 
+- **[Base64 Decode+Encode](https://www.base64decode.org/)** 
+- **[URL Decoder/Encoder](https://meyerweb.com/eric/tools/dencoder/)** 
+## 🚀 Quick Start 
 
 ### Online Usage
-Visit the live website: **[https://reallytyler.github.io/dctools/](https://reallytyler.github.io/dctools/tools)**
+Visit the live website: **[https://reallytyler.github.io/dctools/tools](https://reallytyler.github.io/dctools/tools)**
 
 ### Local Development
 1. Clone the repository:
