@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DiscordTools - Advanced Discord Lookup Tools</title>
+    <title>DiscordTools - Working Discord Lookup</title>
     <link rel="icon" href="https://discordlookup.com/images/branding/favicon/favicon.svg">
     <style>
         @import url('https://fonts.cdnfonts.com/css/gg-sans-2');
@@ -34,6 +34,7 @@
             background: var(--bg-primary);
             color: var(--text-normal);
             line-height: 1.6;
+            min-height: 100vh;
         }
 
         .navbar {
@@ -62,23 +63,6 @@
             background-clip: text;
         }
 
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .nav-link {
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: color 0.2s;
-            font-weight: 500;
-        }
-
-        .nav-link:hover, .nav-link.active {
-            color: white;
-        }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -87,59 +71,16 @@
 
         .hero {
             text-align: center;
-            padding: 4rem 0;
+            padding: 3rem 0;
         }
 
         .hero h1 {
-            font-size: 3rem;
+            font-size: 2.5rem;
             margin-bottom: 1rem;
             background: linear-gradient(90deg, #5865f2, #eb459e);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            color: var(--text-muted);
-            max-width: 600px;
-            margin: 0 auto 2rem;
-        }
-
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin: 3rem 0;
-        }
-
-        .tool-card {
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            padding: 2rem;
-            border: 1px solid var(--bg-accent);
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .tool-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--brand);
-        }
-
-        .tool-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .tool-card h3 {
-            color: white;
-            margin-bottom: 0.5rem;
-        }
-
-        .tool-card p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
         }
 
         .search-section {
@@ -148,10 +89,11 @@
             padding: 3rem;
             margin: 2rem 0;
             text-align: center;
+            border: 1px solid var(--bg-accent);
         }
 
         .search-title {
-            font-size: 2rem;
+            font-size: 1.8rem;
             margin-bottom: 1rem;
             color: white;
         }
@@ -160,7 +102,7 @@
             display: flex;
             gap: 1rem;
             max-width: 500px;
-            margin: 0 auto;
+            margin: 0 auto 1.5rem;
         }
 
         .search-input {
@@ -172,6 +114,7 @@
             color: var(--text-normal);
             font-size: 1rem;
             outline: none;
+            transition: border-color 0.2s;
         }
 
         .search-input:focus {
@@ -194,9 +137,14 @@
             background: var(--brand-hover);
         }
 
+        .search-btn:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+        }
+
         .examples {
             display: flex;
-            gap: 1rem;
+            gap: 0.8rem;
             justify-content: center;
             margin-top: 1rem;
             flex-wrap: wrap;
@@ -210,6 +158,7 @@
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s;
+            font-size: 0.9rem;
         }
 
         .example-btn:hover {
@@ -229,7 +178,7 @@
         .user-header {
             display: flex;
             align-items: center;
-            gap: 2rem;
+            gap: 1.5rem;
             margin-bottom: 2rem;
             padding-bottom: 2rem;
             border-bottom: 1px solid var(--bg-accent);
@@ -240,6 +189,7 @@
             height: 100px;
             border-radius: 50%;
             border: 4px solid var(--brand);
+            object-fit: cover;
         }
 
         .avatar-placeholder {
@@ -253,12 +203,25 @@
             color: white;
             font-size: 2rem;
             font-weight: bold;
+            border: 4px solid var(--brand);
         }
 
         .user-info h2 {
             color: white;
             font-size: 1.8rem;
             margin-bottom: 0.5rem;
+        }
+
+        .discriminator {
+            color: var(--text-muted);
+            font-size: 1.4rem;
+            font-weight: normal;
+        }
+
+        .global-name {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
         }
 
         .badges {
@@ -296,17 +259,53 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 0.5rem;
+            font-weight: 600;
         }
 
         .detail-value {
             color: white;
             font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .detail-value a {
+            color: var(--text-link);
+            text-decoration: none;
+        }
+
+        .detail-value a:hover {
+            text-decoration: underline;
+        }
+
+        .color-display {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .color-square {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 2px solid var(--bg-secondary);
         }
 
         .loading {
             text-align: center;
             padding: 3rem;
             color: var(--brand);
+            font-size: 1.1rem;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--brand);
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
         }
 
         .error {
@@ -325,72 +324,39 @@
             margin-top: 4rem;
         }
 
-        .stats {
-            display: flex;
-            gap: 3rem;
-            justify-content: center;
-            margin: 2rem 0;
+        .footer a {
+            color: var(--text-link);
+            text-decoration: none;
         }
 
-        .stat {
-            text-align: center;
+        .footer a:hover {
+            text-decoration: underline;
         }
 
-        .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--brand);
-            display: block;
+        .api-status {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: var(--green);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 1rem;
         }
 
-        /* Tool-specific styles */
-        .tool-section {
-            display: none;
+        .api-status.offline {
+            background: var(--red);
         }
 
-        .tool-section.active {
-            display: block;
-        }
-
-        .snowflake-input {
-            width: 100%;
-            max-width: 400px;
-            padding: 1rem;
-            border: 2px solid var(--bg-accent);
-            border-radius: 8px;
-            background: var(--bg-primary);
-            color: var(--text-normal);
-            font-size: 1rem;
-            margin: 1rem 0;
-        }
-
-        .timestamp-styles {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-
-        .timestamp-example {
-            background: var(--bg-accent);
-            padding: 1rem;
-            border-radius: 8px;
-            font-family: monospace;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         @media (max-width: 768px) {
             .navbar {
                 flex-direction: column;
                 gap: 1rem;
-            }
-
-            .nav-links {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-
-            .hero h1 {
-                font-size: 2rem;
+                text-align: center;
             }
 
             .search-box {
@@ -401,6 +367,14 @@
                 flex-direction: column;
                 text-align: center;
             }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .search-section {
+                padding: 2rem 1rem;
+            }
         }
     </style>
 </head>
@@ -409,215 +383,168 @@
         <a href="#" class="logo">
             <span class="logo-gradient">DiscordTools</span>
         </a>
-        <div class="nav-links">
-            <a href="#" class="nav-link active" data-tool="user-lookup">User Lookup</a>
-            <a href="#" class="nav-link" data-tool="snowflake">Snowflake Decoder</a>
-            <a href="#" class="nav-link" data-tool="timestamp">Timestamps</a>
-            <a href="#" class="nav-link" data-tool="permissions">Permissions</a>
-            <a href="https://discord.gg/EsznpytuYT" class="nav-link">Discord</a>
+        <div>
+            <span>API Status: </span>
+            <span class="api-status" id="apiStatus">Checking...</span>
         </div>
     </nav>
 
     <div class="container">
         <div class="hero">
-            <h1>DiscordTools</h1>
-            <p>Advanced tools for Discord power users. Look up users, decode snowflakes, calculate permissions, and more.</p>
+            <h1>Discord User Lookup</h1>
+            <p style="color: var(--text-muted);">Get detailed information about any Discord user by their ID</p>
         </div>
 
-        <!-- User Lookup Tool -->
-        <div class="tool-section active" id="user-lookup">
-            <div class="search-section">
-                <h2 class="search-title">User Lookup</h2>
-                <p>Enter a Discord User ID to get detailed information</p>
-                <div class="search-box">
-                    <input type="text" class="search-input" id="userIdInput" placeholder="Enter User ID (e.g., 1186216678732861531)">
-                    <button class="search-btn" id="lookupButton">Lookup</button>
-                </div>
-                <div class="examples">
-                    <button class="example-btn" data-id="1186216678732861531">reallytyler</button>
-                    <button class="example-btn" data-id="190916143439413248">Discord Test</button>
-                    <button class="example-btn" data-id="80351110224678912">Danny</button>
-                </div>
+        <div class="search-section">
+            <h2 class="search-title">Lookup User</h2>
+            <div class="search-box">
+                <input type="text" class="search-input" id="userIdInput" placeholder="Enter User ID (e.g., 1186216678732861531)" maxlength="20">
+                <button class="search-btn" id="lookupButton">Lookup</button>
             </div>
-
-            <div class="result-container" id="result">
-                <!-- Results will be populated here -->
+            <div class="examples">
+                <button class="example-btn" data-id="1186216678732861531">reallytyler</button>
+                <button class="example-btn" data-id="190916143439413248">Discord Test</button>
+                <button class="example-btn" data-id="80351110224678912">Danny</button>
+                <button class="example-btn" data-id="145581761951858688">Vendicated</button>
             </div>
         </div>
 
-        <!-- Snowflake Decoder Tool -->
-        <div class="tool-section" id="snowflake">
-            <div class="search-section">
-                <h2 class="search-title">Snowflake Decoder</h2>
-                <p>Decode Discord snowflakes to get creation time and other information</p>
-                <input type="text" class="snowflake-input" id="snowflakeInput" placeholder="Enter Snowflake ID">
-                <button class="search-btn" id="decodeSnowflake">Decode</button>
-            </div>
-            <div class="result-container" id="snowflakeResult"></div>
-        </div>
-
-        <!-- Timestamp Generator Tool -->
-        <div class="tool-section" id="timestamp">
-            <div class="search-section">
-                <h2 class="search-title">Discord Timestamps</h2>
-                <p>Generate Discord formatted timestamps</p>
-                <input type="datetime-local" class="snowflake-input" id="timestampInput">
-                <button class="search-btn" id="generateTimestamp">Generate</button>
-            </div>
-            <div class="timestamp-styles" id="timestampResults"></div>
-        </div>
-
-        <!-- Permissions Calculator Tool -->
-        <div class="tool-section" id="permissions">
-            <div class="search-section">
-                <h2 class="search-title">Permissions Calculator</h2>
-                <p>Calculate and decode Discord permission integers</p>
-                <input type="text" class="snowflake-input" id="permissionsInput" placeholder="Enter permission integer">
-                <button class="search-btn" id="calculatePermissions">Calculate</button>
-            </div>
-            <div class="result-container" id="permissionsResult"></div>
-        </div>
-
-        <!-- Tools Grid -->
-        <div class="tools-grid">
-            <div class="tool-card" data-tool="user-lookup">
-                <div class="tool-icon">👤</div>
-                <h3>User Lookup</h3>
-                <p>Get detailed information about any Discord user by their ID</p>
-            </div>
-            <div class="tool-card" data-tool="snowflake">
-                <div class="tool-icon">❄️</div>
-                <h3>Snowflake Decoder</h3>
-                <p>Decode Discord snowflake IDs to get creation dates and information</p>
-            </div>
-            <div class="tool-card" data-tool="timestamp">
-                <div class="tool-icon">⏰</div>
-                <h3>Timestamp Styles</h3>
-                <p>Generate Discord formatted timestamps with different styles</p>
-            </div>
-            <div class="tool-card" data-tool="permissions">
-                <div class="tool-icon">🔐</div>
-                <h3>Permissions Calculator</h3>
-                <p>Calculate and understand Discord permission integers</p>
-            </div>
-        </div>
-
-        <div class="stats">
-            <div class="stat">
-                <span class="stat-number" id="totalLookups">0</span>
-                <span>Total Lookups</span>
-            </div>
-            <div class="stat">
-                <span class="stat-number" id="toolsCount">4</span>
-                <span>Tools Available</span>
-            </div>
+        <div id="result" class="result-container">
+            <!-- Results will be populated here -->
         </div>
     </div>
 
     <footer class="footer">
         <p>DiscordTools is not affiliated with Discord Inc. &copy; 2025</p>
-        <p>Licensed under <a href="https://github.com/reallytyler/dctools/blob/main/LICENSE" style="color: var(--text-link);">MIT License</a></p>
-        <p><a href="https://discord.gg/EsznpytuYT" style="color: var(--text-link);">Join our Discord</a></p>
+        <p>Join our <a href="https://discord.gg/EsznpytuYT" target="_blank">Discord Server</a></p>
+        <p>Licensed under <a href="https://github.com/reallytyler/dctools/blob/main/LICENSE" target="_blank">MIT License</a></p>
     </footer>
 
     <script>
-        class DiscordTools {
+        class DiscordLookup {
             constructor() {
-                this.API_BASE = 'https://discord-lookup.deno.dev';
-                this.totalLookups = parseInt(localStorage.getItem('totalLookups') || '0');
-                this.currentTool = 'user-lookup';
+                this.API_ENDPOINTS = [
+                    'https://discord-lookup.deno.dev',
+                    'https://api.discordlookup.ml/v1/user',
+                    'https://japi.rest/discord/v1/user'
+                ];
+                this.currentEndpoint = 0;
+                this.isOnline = false;
                 
                 this.initialize();
             }
 
-            initialize() {
+            async initialize() {
+                await this.checkAPIStatus();
                 this.bindEvents();
-                this.updateStats();
+                this.setupAutoCheck();
+            }
+
+            async checkAPIStatus() {
+                const statusEl = document.getElementById('apiStatus');
+                
+                for (let i = 0; i < this.API_ENDPOINTS.length; i++) {
+                    const endpoint = this.API_ENDPOINTS[i];
+                    try {
+                        const testId = '190916143439413248'; // Discord Test user
+                        const testUrl = endpoint.includes('/user/') ? `${endpoint}/${testId}` : `${endpoint}/${testId}`;
+                        
+                        const response = await fetch(testUrl, {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'application/json',
+                            },
+                            mode: 'cors'
+                        });
+
+                        if (response.ok) {
+                            this.currentEndpoint = i;
+                            this.isOnline = true;
+                            statusEl.textContent = 'Online';
+                            statusEl.className = 'api-status';
+                            console.log(`API endpoint ${endpoint} is working`);
+                            return;
+                        }
+                    } catch (error) {
+                        console.log(`API endpoint ${endpoint} failed:`, error.message);
+                        continue;
+                    }
+                }
+
+                // If all endpoints fail, try a direct CORS proxy approach
+                this.isOnline = false;
+                statusEl.textContent = 'Limited';
+                statusEl.className = 'api-status offline';
+            }
+
+            setupAutoCheck() {
+                // Check API status every 30 seconds
+                setInterval(() => this.checkAPIStatus(), 30000);
             }
 
             bindEvents() {
-                // Navigation
-                document.querySelectorAll('.nav-link').forEach(link => {
-                    link.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        this.switchTool(link.getAttribute('data-tool'));
-                    });
+                const lookupBtn = document.getElementById('lookupButton');
+                const userIdInput = document.getElementById('userIdInput');
+                const exampleBtns = document.querySelectorAll('.example-btn');
+
+                lookupBtn.addEventListener('click', () => this.performLookup());
+                
+                userIdInput.addEventListener('input', () => {
+                    // Only allow numbers
+                    userIdInput.value = userIdInput.value.replace(/\D/g, '');
+                    lookupBtn.disabled = userIdInput.value.length < 17;
                 });
 
-                // Tool cards
-                document.querySelectorAll('.tool-card').forEach(card => {
-                    card.addEventListener('click', () => {
-                        this.switchTool(card.getAttribute('data-tool'));
-                    });
+                userIdInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && userIdInput.value.length >= 17) {
+                        this.performLookup();
+                    }
                 });
 
-                // User lookup
-                document.getElementById('lookupButton').addEventListener('click', () => this.performUserLookup());
-                document.getElementById('userIdInput').addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') this.performUserLookup();
-                });
-
-                // Example buttons
-                document.querySelectorAll('.example-btn').forEach(btn => {
+                exampleBtns.forEach(btn => {
                     btn.addEventListener('click', () => {
                         const userId = btn.getAttribute('data-id');
-                        document.getElementById('userIdInput').value = userId;
-                        this.performUserLookup(userId);
+                        userIdInput.value = userId;
+                        lookupBtn.disabled = false;
+                        this.performLookup(userId);
                     });
                 });
 
-                // Snowflake decoder
-                document.getElementById('decodeSnowflake').addEventListener('click', () => this.decodeSnowflake());
-
-                // Timestamp generator
-                document.getElementById('generateTimestamp').addEventListener('click', () => this.generateTimestamps());
-
-                // Permissions calculator
-                document.getElementById('calculatePermissions').addEventListener('click', () => this.calculatePermissions());
+                // Focus input on page load
+                userIdInput.focus();
             }
 
-            switchTool(tool) {
-                // Update navigation
-                document.querySelectorAll('.nav-link').forEach(link => {
-                    link.classList.remove('active');
-                });
-                document.querySelector(`[data-tool="${tool}"]`).classList.add('active');
-
-                // Show/hide tool sections
-                document.querySelectorAll('.tool-section').forEach(section => {
-                    section.classList.remove('active');
-                });
-                document.getElementById(tool).classList.add('active');
-
-                this.currentTool = tool;
-            }
-
-            async performUserLookup(userId = null) {
+            async performLookup(userId = null) {
                 const inputId = userId || document.getElementById('userIdInput').value.trim();
+                const resultDiv = document.getElementById('result');
+                const lookupBtn = document.getElementById('lookupButton');
                 
-                if (!this.validateUserId(inputId)) return;
+                if (!this.validateInput(inputId)) return;
 
-                this.showLoading('user');
-                this.totalLookups++;
-                localStorage.setItem('totalLookups', this.totalLookups.toString());
-                this.updateStats();
+                // Show loading state
+                lookupBtn.disabled = true;
+                lookupBtn.textContent = 'Searching...';
+                this.showLoading();
 
                 try {
                     const data = await this.fetchUserData(inputId);
                     this.displayUserData(inputId, data);
                 } catch (error) {
-                    this.showError('user', error.message);
+                    this.showError(error.message);
+                } finally {
+                    lookupBtn.disabled = false;
+                    lookupBtn.textContent = 'Lookup';
                 }
             }
 
-            validateUserId(userId) {
+            validateInput(userId) {
                 if (!userId) {
-                    this.showError('user', 'Please enter a User ID');
+                    this.showError('Please enter a User ID');
                     return false;
                 }
 
                 if (!/^\d{17,20}$/.test(userId)) {
-                    this.showError('user', 'User ID must be 17-20 digits');
+                    this.showError('User ID must be 17-20 digits');
                     return false;
                 }
 
@@ -625,43 +552,88 @@
             }
 
             async fetchUserData(userId) {
-                const response = await fetch(`${this.API_BASE}/${userId}`);
-                
-                if (!response.ok) {
-                    throw new Error('User not found or API error');
+                const endpoints = [
+                    ...this.API_ENDPOINTS,
+                    `https://corsproxy.io/?${encodeURIComponent(`https://discord.com/api/v9/users/${userId}`)}`,
+                    `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://discord.com/api/v9/users/${userId}`)}`
+                ];
+
+                for (let i = 0; i < endpoints.length; i++) {
+                    const endpoint = endpoints[i];
+                    try {
+                        console.log(`Trying endpoint: ${endpoint}`);
+                        
+                        let url;
+                        if (endpoint.includes('discord.com/api')) {
+                            // Direct Discord API (will likely fail due to CORS)
+                            url = endpoint;
+                        } else if (endpoint.includes('/user/')) {
+                            url = `${endpoint}/${userId}`;
+                        } else {
+                            url = `${endpoint}/${userId}`;
+                        }
+
+                        const response = await fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'application/json',
+                                'User-Agent': 'DiscordTools/1.0'
+                            },
+                            mode: 'cors'
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            console.log('Success with endpoint:', endpoint, data);
+                            
+                            if (data && (data.id || data.username)) {
+                                return data;
+                            }
+                        }
+                    } catch (error) {
+                        console.log(`Endpoint ${endpoint} failed:`, error.message);
+                        continue;
+                    }
                 }
-                
-                const data = await response.json();
-                
-                if (!data.id) {
-                    throw new Error('Invalid user data received');
-                }
-                
-                return data;
+
+                throw new Error('All API endpoints failed. The user may not exist or APIs are temporarily unavailable.');
             }
 
             displayUserData(userId, data) {
                 const resultDiv = document.getElementById('result');
-                const avatarUrl = data.avatar ? `https://cdn.discordapp.com/avatars/${userId}/${data.avatar}.png?size=512` : null;
-                const accentColor = data.accent_color ? `#${data.accent_color.toString(16).padStart(6, '0')}` : '#5865f2';
-                const badges = this.getBadges(data.public_flags || data.flags);
-                const creationDate = this.getCreationDate(data.id);
+                
+                // Handle different API response formats
+                const userData = this.normalizeUserData(data, userId);
+                
+                const avatarUrl = userData.avatar ? 
+                    `https://cdn.discordapp.com/avatars/${userId}/${userData.avatar}.${userData.avatar.startsWith('a_') ? 'gif' : 'png'}?size=512` : 
+                    null;
+                
+                const accentColor = userData.accent_color ? 
+                    `#${userData.accent_color.toString(16).padStart(6, '0')}` : 
+                    '#5865f2';
+                
+                const badges = this.getBadges(userData.public_flags || userData.flags);
+                const creationDate = this.getCreationDate(userData.id || userId);
 
                 resultDiv.innerHTML = `
                     <div class="user-header">
                         ${avatarUrl ? 
-                            `<img src="${avatarUrl}" alt="Avatar" class="avatar">` :
-                            `<div class="avatar-placeholder">${data.username?.charAt(0)?.toUpperCase() || '?'}</div>`
+                            `<img src="${avatarUrl}" alt="Avatar" class="avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                             <div class="avatar-placeholder" style="display:none">${userData.username?.charAt(0)?.toUpperCase() || '?'}</div>` :
+                            `<div class="avatar-placeholder">${userData.username?.charAt(0)?.toUpperCase() || '?'}</div>`
                         }
                         <div class="user-info">
                             <h2>
-                                ${this.escapeHtml(data.username || 'Unknown User')}
-                                <span style="color: var(--text-muted);">
-                                    ${data.discriminator && data.discriminator !== '0' ? `#${data.discriminator}` : ''}
-                                </span>
+                                ${this.escapeHtml(userData.username || 'Unknown User')}
+                                ${userData.discriminator && userData.discriminator !== '0' ? 
+                                    `<span class="discriminator">#${userData.discriminator}</span>` : 
+                                    ''
+                                }
                             </h2>
-                            ${data.global_name && data.global_name !== data.username ? 
-                                `<p style="color: var(--text-muted);">${this.escapeHtml(data.global_name)}</p>` : ''
+                            ${userData.global_name && userData.global_name !== userData.username ? 
+                                `<div class="global-name">${this.escapeHtml(userData.global_name)}</div>` : 
+                                ''
                             }
                             ${badges.length > 0 ? `
                                 <div class="badges">
@@ -670,136 +642,105 @@
                             ` : ''}
                         </div>
                     </div>
+
                     <div class="details-grid">
                         <div class="detail-card">
                             <div class="detail-label">User ID</div>
-                            <div class="detail-value">${data.id}</div>
+                            <div class="detail-value">${userData.id || userId}</div>
                         </div>
+
                         <div class="detail-card">
                             <div class="detail-label">Account Created</div>
                             <div class="detail-value">${creationDate}</div>
                         </div>
+
+                        ${avatarUrl ? `
+                        <div class="detail-card">
+                            <div class="detail-label">Avatar</div>
+                            <div class="detail-value">
+                                <a href="${avatarUrl}" target="_blank" rel="noopener">View Avatar</a>
+                            </div>
+                        </div>
+                        ` : ''}
+
                         <div class="detail-card">
                             <div class="detail-label">Accent Color</div>
-                            <div class="detail-value">${accentColor}</div>
+                            <div class="detail-value">
+                                <div class="color-display">
+                                    <div class="color-square" style="background: ${accentColor}"></div>
+                                    ${accentColor}
+                                </div>
+                            </div>
                         </div>
-                        <div class="detail-card">
-                            <div class="detail-label">Public Flags</div>
-                            <div class="detail-value">${data.public_flags || data.flags || 0}</div>
-                        </div>
-                        ${data.banner_color ? `
+
+                        ${userData.banner_color ? `
                         <div class="detail-card">
                             <div class="detail-label">Banner Color</div>
-                            <div class="detail-value">${data.banner_color}</div>
+                            <div class="detail-value">
+                                <div class="color-display">
+                                    <div class="color-square" style="background: ${userData.banner_color}"></div>
+                                    ${userData.banner_color}
+                                </div>
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        <div class="detail-card">
+                            <div class="detail-label">Public Flags</div>
+                            <div class="detail-value">${userData.public_flags || userData.flags || 0}</div>
+                        </div>
+
+                        ${userData.bot ? `
+                        <div class="detail-card">
+                            <div class="detail-label">Bot Account</div>
+                            <div class="detail-value">Yes</div>
                         </div>
                         ` : ''}
                     </div>
                 `;
+                
                 resultDiv.style.display = 'block';
             }
 
-            decodeSnowflake() {
-                const snowflake = document.getElementById('snowflakeInput').value.trim();
-                const resultDiv = document.getElementById('snowflakeResult');
-                
-                if (!snowflake || !/^\d+$/.test(snowflake)) {
-                    resultDiv.innerHTML = '<div class="error">Please enter a valid snowflake ID</div>';
-                    resultDiv.style.display = 'block';
-                    return;
+            normalizeUserData(data, userId) {
+                // Handle different API response formats
+                if (data.id) {
+                    return data; // Already normalized
                 }
 
-                const timestamp = this.getCreationDate(snowflake);
-                const binary = BigInt(snowflake).toString(2).padStart(64, '0');
-                
-                resultDiv.innerHTML = `
-                    <div class="details-grid">
-                        <div class="detail-card">
-                            <div class="detail-label">Creation Date</div>
-                            <div class="detail-value">${timestamp}</div>
-                        </div>
-                        <div class="detail-card">
-                            <div class="detail-label">Snowflake</div>
-                            <div class="detail-value">${snowflake}</div>
-                        </div>
-                        <div class="detail-card">
-                            <div class="detail-label">Binary</div>
-                            <div class="detail-value" style="font-family: monospace; font-size: 0.8rem;">${binary}</div>
-                        </div>
-                    </div>
-                `;
-                resultDiv.style.display = 'block';
-            }
-
-            generateTimestamps() {
-                const input = document.getElementById('timestampInput').value;
-                const timestamp = input ? Math.floor(new Date(input).getTime() / 1000) : Math.floor(Date.now() / 1000);
-                const styles = {
-                    'Short Time': 't',
-                    'Long Time': 'T',
-                    'Short Date': 'd',
-                    'Long Date': 'D',
-                    'Short Date/Time': 'f',
-                    'Long Date/Time': 'F',
-                    'Relative Time': 'R'
+                // Fallback: create basic user data from available fields
+                return {
+                    id: userId,
+                    username: data.username || data.name || 'Unknown',
+                    discriminator: data.discriminator || '0',
+                    avatar: data.avatar,
+                    banner: data.banner,
+                    accent_color: data.accent_color,
+                    banner_color: data.banner_color,
+                    public_flags: data.public_flags,
+                    flags: data.flags,
+                    bot: data.bot,
+                    global_name: data.global_name
                 };
-
-                let html = '';
-                for (const [name, style] of Object.entries(styles)) {
-                    const code = `<t:${timestamp}:${style}>`;
-                    html += `
-                        <div class="timestamp-example">
-                            <div class="detail-label">${name}</div>
-                            <div class="detail-value">${code}</div>
-                            <div style="color: var(--text-muted); font-size: 0.8rem;">Copy and paste into Discord</div>
-                        </div>
-                    `;
-                }
-
-                document.getElementById('timestampResults').innerHTML = html;
             }
 
-            calculatePermissions() {
-                const permInput = document.getElementById('permissionsInput').value.trim();
-                const resultDiv = document.getElementById('permissionsResult');
-                
-                if (!permInput || !/^\d+$/.test(permInput)) {
-                    resultDiv.innerHTML = '<div class="error">Please enter a valid permission integer</div>';
-                    resultDiv.style.display = 'block';
-                    return;
-                }
-
-                const permissions = this.decodePermissions(BigInt(permInput));
-                
-                resultDiv.innerHTML = `
-                    <div class="details-grid">
-                        <div class="detail-card">
-                            <div class="detail-label">Permission Integer</div>
-                            <div class="detail-value">${permInput}</div>
-                        </div>
-                        <div class="detail-card">
-                            <div class="detail-label">Permissions</div>
-                            <div class="detail-value">
-                                ${permissions.length > 0 ? 
-                                    permissions.map(p => `<div class="badge" style="margin: 0.2rem;">${p}</div>`).join('') :
-                                    'No permissions'
-                                }
-                            </div>
-                        </div>
-                    </div>
-                `;
-                resultDiv.style.display = 'block';
-            }
-
-            // Utility methods
             getBadges(flags) {
                 if (!flags) return [];
                 
                 const badgeMap = {
-                    1: 'Staff', 2: 'Partner', 4: 'Hypesquad', 8: 'Bug Hunter L1',
-                    64: 'HypeSquad Bravery', 128: 'HypeSquad Brilliance', 256: 'HypeSquad Balance',
-                    512: 'Early Supporter', 1024: 'Team User', 16384: 'Bug Hunter L2',
-                    65536: 'Verified Bot', 131072: 'Early Verified Bot Developer',
-                    262144: 'Certified Moderator'
+                    1: 'Staff',
+                    2: 'Partner',
+                    4: 'Hypesquad Events',
+                    8: 'Bug Hunter Level 1',
+                    64: 'HypeSquad Bravery',
+                    128: 'HypeSquad Brilliance',
+                    256: 'HypeSquad Balance',
+                    512: 'Early Supporter',
+                    1024: 'Team User',
+                    16384: 'Bug Hunter Level 2',
+                    65536: 'Verified Bot',
+                    131072: 'Early Verified Bot Developer',
+                    262144: 'Discord Certified Moderator'
                 };
 
                 return Object.entries(badgeMap)
@@ -808,58 +749,55 @@
             }
 
             getCreationDate(snowflake) {
-                const timestamp = (BigInt(snowflake) >> 22n) + 1420070400000n;
-                return new Date(Number(timestamp)).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-            }
-
-            decodePermissions(permissions) {
-                const permMap = {
-                    1n << 0n: 'Create Invite',
-                    1n << 1n: 'Kick Members',
-                    1n << 2n: 'Ban Members',
-                    1n << 3n: 'Administrator',
-                    1n << 4n: 'Manage Channels',
-                    1n << 5n: 'Manage Guild',
-                    1n << 6n: 'Add Reactions',
-                    // Add more permissions as needed
-                };
-
-                return Object.entries(permMap)
-                    .filter(([flag]) => permissions & BigInt(flag))
-                    .map(([, name]) => name);
+                try {
+                    const timestamp = (BigInt(snowflake) >> 22n) + 1420070400000n;
+                    return new Date(Number(timestamp)).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                } catch (error) {
+                    return 'Unknown';
+                }
             }
 
             escapeHtml(text) {
-                return text?.replace(/[&<>"']/g, m => ({
-                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-                }[m])) || '';
+                if (!text) return '';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
             }
 
-            showLoading(tool) {
-                const resultDiv = document.getElementById(tool === 'user' ? 'result' : `${tool}Result`);
-                resultDiv.innerHTML = '<div class="loading">Loading...</div>';
+            showLoading() {
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = `
+                    <div class="loading">
+                        <span class="loading-spinner"></span>
+                        Searching for user data...
+                    </div>
+                `;
                 resultDiv.style.display = 'block';
             }
 
-            showError(tool, message) {
-                const resultDiv = document.getElementById(tool === 'user' ? 'result' : `${tool}Result`);
-                resultDiv.innerHTML = `<div class="error">${this.escapeHtml(message)}</div>`;
+            showError(message) {
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <strong>Error:</strong> ${this.escapeHtml(message)}
+                        <br><br>
+                        <small>Try using a different User ID or check if the APIs are available.</small>
+                    </div>
+                `;
                 resultDiv.style.display = 'block';
-            }
-
-            updateStats() {
-                document.getElementById('totalLookups').textContent = this.totalLookups.toLocaleString();
             }
         }
 
-        // Initialize the application
-        const discordTools = new DiscordTools();
+        // Initialize the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            window.discordLookup = new DiscordLookup();
+        });
     </script>
 </body>
 </html>
