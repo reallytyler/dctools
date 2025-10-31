@@ -526,4 +526,292 @@
 
                 userIdInput.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter' && userIdInput.value.length >= 17) {
-                        this.perform
+                        this.performLookup();
+                    }
+                });
+
+                exampleBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const userId = btn.getAttribute('data-id');
+                        userIdInput.value = userId;
+                        this.performLookup(userId);
+                    });
+                });
+
+                userIdInput.focus();
+            }
+
+            async performLookup(userId = null) {
+                const inputId = userId || document.getElementById('userIdInput').value.trim();
+                const resultDiv = document.getElementById('result');
+                const lookupBtn = document.getElementById('lookupButton');
+                
+                if (!this.validateInput(inputId)) return;
+
+                lookupBtn.disabled = true;
+                lookupBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+                this.showLoading();
+
+                try {
+                    const data = await this.fetchUserData(inputId);
+                    this.displayUserData(inputId, data);
+                } catch (error) {
+                    this.showError(error.message);
+                } finally {
+                    lookupBtn.disabled = false;
+                    lookupBtn.innerHTML = '<i class="fas fa-search"></i> Lookup';
+                }
+            }
+
+            validateInput(userId) {
+                if (!userId) {
+                    this.showError('Please enter a User ID');
+                    return false;
+                }
+
+                if (!/^\d{17,20}$/.test(userId)) {
+                    this.showError('User ID must be 17-20 digits');
+                    return false;
+                }
+
+                return true;
+            }
+
+            async fetchUserData(userId) {
+                for (let endpoint of this.API_ENDPOINTS) {
+                    try {
+                        const url = endpoint.includes('/user/') ? `${endpoint}/${userId}` : `${endpoint}/${userId}`;
+                        const response = await fetch(url);
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data && (data.id || data.username)) {
+                                return data;
+                            }
+                        }
+                    } catch (error) {
+                        continue;
+                    }
+                }
+                throw new Error('Unable to fetch user data. The user may not exist or APIs are unavailable.');
+            }
+
+            displayUserData(userId, data) {
+                const resultDiv = document.getElementById('result');
+                const userData = this.normalizeUserData(data, userId);
+                
+                const avatarUrl = userData.avatar ? 
+                    `https://cdn.discordapp.com/avatars/${userId}/${userData.avatar}.${userData.avatar.startsWith('a_') ? 'gif' : 'png'}?size=512` : 
+                    null;
+                
+                const accentColor = userData.accent_color ? 
+                    `#${userData.accent_color.toString(16).padStart(6, '0')}` : 
+                    '#5865f2';
+                
+                const badges = this.getBadges(userData.public_flags || userData.flags);
+                const creationDate = this.getCreationDate(userData.id || userId);
+
+                resultDiv.innerHTML = `
+                    <div class="user-header">
+                        ${avatarUrl ? 
+                            `<img src="${avatarUrl}" alt="Avatar" class="avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                             <div class="avatar-placeholder" style="display:none">${userData.username?.charAt(0)?.toUpperCase() || '?'}</div>` :
+                            `<div class="avatar-placeholder">${userData.username?.charAt(0)?.toUpperCase() || '?'}</div>`
+                        }
+                        <div class="user-info">
+                            <h2>
+                                <i class="fas fa-user"></i>
+                                ${this.escapeHtml(userData.username || 'Unknown User')}
+                                ${userData.discriminator && userData.discriminator !== '0' ? 
+                                    `<span class="discriminator">#${userData.discriminator}</span>` : 
+                                    ''
+                                }
+                                <button class="copy-btn" onclick="navigator.clipboard.writeText('${userData.id || userId}')" title="Copy User ID">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </h2>
+                            ${userData.global_name && userData.global_name !== userData.username ? 
+                                `<div class="global-name">
+                                    <i class="fas fa-globe"></i>
+                                    ${this.escapeHtml(userData.global_name)}
+                                </div>` : 
+                                ''
+                            }
+                            ${badges.length > 0 ? `
+                                <div class="badges">
+                                    ${badges.map(badge => `
+                                        <div class="badge">
+                                            <i class="fas fa-certificate"></i>
+                                            ${this.escapeHtml(badge)}
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    <div class="details-grid">
+                        <div class="detail-card">
+                            <div class="detail-label">
+                                <i class="fas fa-id-card"></i>
+                                User ID
+                            </div>
+                            <div class="detail-value">${userData.id || userId}</div>
+                        </div>
+
+                        <div class="detail-card">
+                            <div class="detail-label">
+                                <i class="fas fa-calendar-plus"></i>
+                                Account Created
+                            </div>
+                            <div class="detail-value">${creationDate}</div>
+                        </div>
+
+                        ${avatarUrl ? `
+                        <div class="detail-card">
+                            <div class="detail-label">
+                                <i class="fas fa-image"></i>
+                                Avatar
+                            </div>
+                            <div class="detail-value">
+                                <a href="${avatarUrl}" target="_blank" rel="noopener">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    View Avatar
+                                </a>
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        <div class="detail-card">
+                            <div class="detail-label">
+                                <i class="fas fa-palette"></i>
+                                Accent Color
+                            </div>
+                            <div class="detail-value">
+                                <div class="color-display">
+                                    <div class="color-square" style="background: ${accentColor}"></div>
+                                    ${accentColor}
+                                </div>
+                            </div>
+                        </div>
+
+                        ${userData.banner_color ? `
+                        <div class="detail-card">
+                            <div class="detail-label">
+                                <i class="fas fa-image"></i>
+                                Banner Color
+                            </div>
+                            <div class="detail-value">
+                                <div class="color-display">
+                                    <div class="color-square" style="background: ${userData.banner_color}"></div>
+                                    ${userData.banner_color}
+                                </div>
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        <div class="detail-card">
+                            <div class="detail-label">
+                                <i class="fas fa-flag"></i>
+                                Public Flags
+                            </div>
+                            <div class="detail-value">${userData.public_flags || userData.flags || 0}</div>
+                        </div>
+
+                        ${userData.bot ? `
+                        <div class="detail-card">
+                            <div class="detail-label">
+                                <i class="fas fa-robot"></i>
+                                Bot Account
+                            </div>
+                            <div class="detail-value">Yes</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+                
+                resultDiv.style.display = 'block';
+            }
+
+            normalizeUserData(data, userId) {
+                if (data.id) return data;
+                return {
+                    id: userId,
+                    username: data.username || data.name || 'Unknown',
+                    discriminator: data.discriminator || '0',
+                    avatar: data.avatar,
+                    banner: data.banner,
+                    accent_color: data.accent_color,
+                    banner_color: data.banner_color,
+                    public_flags: data.public_flags,
+                    flags: data.flags,
+                    bot: data.bot,
+                    global_name: data.global_name
+                };
+            }
+
+            getBadges(flags) {
+                if (!flags) return [];
+                const badgeMap = {
+                    1: 'Staff', 2: 'Partner', 4: 'Hypesquad Events', 8: 'Bug Hunter Level 1',
+                    64: 'HypeSquad Bravery', 128: 'HypeSquad Brilliance', 256: 'HypeSquad Balance',
+                    512: 'Early Supporter', 1024: 'Team User', 16384: 'Bug Hunter Level 2',
+                    65536: 'Verified Bot', 131072: 'Early Verified Bot Developer', 262144: 'Discord Certified Moderator'
+                };
+                return Object.entries(badgeMap)
+                    .filter(([flag]) => flags & parseInt(flag))
+                    .map(([, name]) => name);
+            }
+
+            getCreationDate(snowflake) {
+                try {
+                    const timestamp = (BigInt(snowflake) >> 22n) + 1420070400000n;
+                    return new Date(Number(timestamp)).toLocaleDateString('en-US', {
+                        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                    });
+                } catch (error) {
+                    return 'Unknown';
+                }
+            }
+
+            escapeHtml(text) {
+                if (!text) return '';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            showLoading() {
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        Searching for user data...
+                    </div>
+                `;
+                resultDiv.style.display = 'block';
+            }
+
+            showError(message) {
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>
+                            <strong>Error:</strong> ${this.escapeHtml(message)}
+                            <br>
+                            <small>Try using a different User ID or check if the APIs are available.</small>
+                        </div>
+                    </div>
+                `;
+                resultDiv.style.display = 'block';
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            window.userLookup = new UserLookup();
+        });
+    </script>
+</body>
+</html>
