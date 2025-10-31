@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64 Converter - DiscordTools</title>
+    <link rel="icon" href="https://discordlookup.com/images/branding/favicon/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.cdnfonts.com/css/gg-sans-2');
+        :root {
+            --bg-primary: #36393f; --bg-secondary: #2f3136; --bg-accent: #40444b;
+            --text-normal: #dcddde; --text-muted: #72767d; --text-link: #00aff4;
+            --brand: #5865f2; --brand-hover: #4752c4; --green: #3ba55c; --red: #ed4245;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'gg sans', sans-serif; background: var(--bg-primary); color: var(--text-normal); line-height: 1.6; }
+        .navbar { background: var(--bg-secondary); padding: 1rem 2rem; border-bottom: 1px solid var(--bg-accent); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .logo { display: flex; align-items: center; gap: 12px; color: white; text-decoration: none; font-weight: bold; font-size: 1.5rem; }
+        .logo-gradient { background: linear-gradient(90deg, #5865f2, #eb459e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .nav-links { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
+        .nav-link { color: var(--text-muted); text-decoration: none; transition: all 0.2s ease; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 6px; }
+        .nav-link:hover, .nav-link.active { color: white; background: var(--bg-accent); }
+        .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+        .tool-header { text-align: center; margin-bottom: 3rem; }
+        .tool-header h1 { font-size: 2.5rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 1rem; }
+        .tool-header h1 i { color: var(--brand); }
+        .tool-section { background: var(--bg-secondary); border-radius: 12px; padding: 2rem; margin: 2rem 0; border: 1px solid var(--bg-accent); }
+        .input-group { margin-bottom: 1.5rem; }
+        .input-group label { display: block; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+        .textarea { width: 100%; min-height: 150px; padding: 1rem; border: 2px solid var(--bg-accent); border-radius: 8px; background: var(--bg-primary); color: var(--text-normal); font-family: monospace; resize: vertical; outline: none; }
+        .textarea:focus { border-color: var(--brand); }
+        .button-group { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .btn { padding: 1rem 2rem; background: var(--brand); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s; }
+        .btn:hover { background: var(--brand-hover); }
+        .btn-secondary { background: var(--bg-accent); }
+        .btn-secondary:hover { background: var(--text-muted); }
+        .result { margin-top: 1.5rem; }
+        .footer { text-align: center; padding: 3rem 0; color: var(--text-muted); border-top: 1px solid var(--bg-accent); margin-top: 4rem; }
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; text-align: center; }
+            .container { padding: 1rem; }
+            .button-group { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo"><i class="fab fa-discord"></i><span class="logo-gradient">DiscordTools</span></a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link"><i class="fas fa-arrow-left"></i>Back to Tools</a>
+            <a href="https://discord.gg/EsznpytuYT" class="nav-link" target="_blank"><i class="fab fa-discord"></i>Discord</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <h1><i class="fas fa-exchange-alt"></i> Base64 Converter</h1>
+            <p style="color: var(--text-muted);">Encode and decode Base64 strings with support for text and file content</p>
+        </div>
+
+        <div class="tool-section">
+            <div class="input-group">
+                <label><i class="fas fa-pencil-alt"></i> Input Text</label>
+                <textarea class="textarea" id="inputText" placeholder="Enter text to encode or Base64 to decode..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn" onclick="encodeBase64()">
+                    <i class="fas fa-lock"></i> Encode to Base64
+                </button>
+                <button class="btn" onclick="decodeBase64()">
+                    <i class="fas fa-lock-open"></i> Decode from Base64
+                </button>
+                <button class="btn btn-secondary" onclick="clearText()">
+                    <i class="fas fa-eraser"></i> Clear
+                </button>
+                <button class="btn btn-secondary" onclick="copyResult()">
+                    <i class="fas fa-copy"></i> Copy Result
+                </button>
+            </div>
+
+            <div class="input-group">
+                <label><i class="fas fa-code"></i> Result</label>
+                <textarea class="textarea" id="outputText" placeholder="Result will appear here..." readonly></textarea>
+            </div>
+
+            <div class="input-group">
+                <label><i class="fas fa-file-upload"></i> File Input</label>
+                <input type="file" id="fileInput" class="textarea" style="height: auto; padding: 0.5rem;" onchange="handleFileSelect()">
+                <small style="color: var(--text-muted); margin-top: 0.5rem;">Select a file to encode it to Base64</small>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>DiscordTools is not affiliated with Discord Inc. &copy; 2025</p>
+        <p>Base64 Converter Tool - Encode and decode Base64 data</p>
+    </footer>
+
+    <script>
+        function encodeBase64() {
+            const input = document.getElementById('inputText').value;
+            if (!input) {
+                alert('Please enter text to encode');
+                return;
+            }
+            try {
+                const encoded = btoa(unescape(encodeURIComponent(input)));
+                document.getElementById('outputText').value = encoded;
+            } catch (error) {
+                alert('Error encoding text: ' + error.message);
+            }
+        }
+
+        function decodeBase64() {
+            const input = document.getElementById('inputText').value;
+            if (!input) {
+                alert('Please enter Base64 to decode');
+                return;
+            }
+            try {
+                const decoded = decodeURIComponent(escape(atob(input)));
+                document.getElementById('outputText').value = decoded;
+            } catch (error) {
+                alert('Error decoding Base64: ' + error.message);
+            }
+        }
+
+        function clearText() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('outputText').value = '';
+            document.getElementById('fileInput').value = '';
+        }
+
+        function copyResult() {
+            const output = document.getElementById('outputText');
+            if (!output.value) {
+                alert('No result to copy');
+                return;
+            }
+            output.select();
+            document.execCommand('copy');
+            alert('Copied to clipboard!');
+        }
+
+        function handleFileSelect() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64 = e.target.result.split(',')[1];
+                document.getElementById('outputText').value = base64;
+                document.getElementById('inputText').value = `File: ${file.name} (${file.type})`;
+            };
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>
