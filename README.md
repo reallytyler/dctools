@@ -40,7 +40,7 @@ A comprehensive collection of Discord utilities and developer tools built with m
 ## 🚀 Quick Start
 
 ### Online Usage
-Visit the live website: **[https://reallytyler.github.io/dctools/](https://reallytyler.github.io/dctools/)**
+Visit the live website: **[https://reallytyler.github.io/dctools/](https://reallytyler.github.io/dctools/tools)**
 
 ### Local Development
 1. Clone the repository:
