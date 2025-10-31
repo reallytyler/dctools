@@ -1,1 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Lookup - DiscordTools</title>
+    <link rel="icon" href="https://discordlookup.com/images/branding/favicon/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.cdnfonts.com/css/gg-sans-2');
 
+        :root {
+            --bg-primary: #36393f;
+            --bg-secondary: #2f3136;
+            --bg-tertiary: #202225;
+            --bg-accent: #40444b;
+            --text-normal: #dcddde;
+            --text-muted: #72767d;
+            --text-link: #00aff4;
+            --brand: #5865f2;
+            --brand-hover: #4752c4;
+            --green: #3ba55c;
+            --red: #ed4245;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'gg sans', 'Whitney', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-normal);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: var(--bg-secondary);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--bg-accent);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .logo-gradient {
+            background: linear-gradient(90deg, #5865f2, #eb459e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: white;
+            background: var(--bg-accent);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .tool-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .tool-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .tool-header h1 i {
+            color: var(--brand);
+            font-size: 2.2rem;
+        }
+
+        .search-section {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 3rem;
+            margin: 2rem 0;
+            text-align: center;
+            border: 1px solid var(--bg-accent);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 1rem;
+            max-width: 500px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid var(--bg-accent);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            color: var(--text-normal);
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--brand);
+        }
+
+        .search-btn {
+            padding: 1rem 2rem;
+            background: var(--brand);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .search-btn:hover {
+            background: var(--brand-hover);
+        }
+
+        .search-btn:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .examples {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: center;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .example-btn {
+            padding: 0.5rem 1rem;
+            background: var(--bg-accent);
+            color: var(--text-muted);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .example-btn:hover {
+            background: var(--brand);
+            color: white;
+        }
+
+        .result-container {
+            display: none;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 1px solid var(--bg-accent);
+        }
+
+        .user-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--bg-accent);
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid var(--brand);
+            object-fit: cover;
+        }
+
+        .avatar-placeholder {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--brand);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            border: 4px solid var(--brand);
+        }
+
+        .user-info h2 {
+            color: white;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .discriminator {
+            color: var(--text-muted);
+            font-size: 1.4rem;
+            font-weight: normal;
+        }
+
+        .global-name {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .badges {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: var(--brand);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .detail-card {
+            background: var(--bg-accent);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--brand);
+        }
+
+        .detail-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .detail-value {
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .detail-value a {
+            color: var(--text-link);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .detail-value a:hover {
+            text-decoration: underline;
+        }
+
+        .color-display {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .color-square {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 2px solid var(--bg-secondary);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--brand);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--brand);
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        .error {
+            background: var(--red);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 3rem 0;
+            color: var(--text-muted);
+            border-top: 1px solid var(--bg-accent);
+            margin-top: 4rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-link);
+            text-decoration: none;
+            margin-bottom: 2rem;
+            padding: 0.8rem 1.5rem;
+            border: 1px solid var(--bg-accent);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .back-link:hover {
+            background: var(--bg-accent);
+            color: white;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .user-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .search-section {
+                padding: 2rem 1rem;
+            }
+        }
+
+        .copy-btn {
+            background: var(--bg-accent);
+            border: none;
+            color: var(--text-muted);
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 0.5rem;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: var(--brand);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">
+            <i class="fab fa-discord"></i>
+            <span class="logo-gradient">DiscordTools</span>
+        </a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Tools
+            </a>
+            <a href="https://discord.gg/EsznpytuYT" class="nav-link" target="_blank">
+                <i class="fab fa-discord"></i>
+                Discord
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <h1><i class="fas fa-user-search"></i> User Lookup</h1>
+            <p style="color: var(--text-muted);">Get detailed information about any Discord user by their ID</p>
+        </div>
+
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" class="search-input" id="userIdInput" placeholder="Enter User ID (e.g., 1186216678732861531)" maxlength="20">
+                <button class="search-btn" id="lookupButton">
+                    <i class="fas fa-search"></i>
+                    Lookup
+                </button>
+            </div>
+            <div class="examples">
+                <button class="example-btn" data-id="1186216678732861531">
+                    <i class="fas fa-user"></i>
+                    reallytyler
+                </button>
+                <button class="example-btn" data-id="190916143439413248">
+                    <i class="fas fa-robot"></i>
+                    Discord Test
+                </button>
+                <button class="example-btn" data-id="80351110224678912">
+                    <i class="fas fa-code"></i>
+                    Danny
+                </button>
+            </div>
+        </div>
+
+        <div id="result" class="result-container">
+            <!-- Results will be populated here -->
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>DiscordTools is not affiliated with Discord Inc. &copy; 2025</p>
+        <p>User Lookup Tool - Get detailed Discord user information</p>
+    </footer>
+
+    <script>
+        // User Lookup functionality (same as before but with icon support)
+        class UserLookup {
+            constructor() {
+                this.API_ENDPOINTS = [
+                    'https://discord-lookup.deno.dev',
+                    'https://api.discordlookup.ml/v1/user',
+                    'https://japi.rest/discord/v1/user'
+                ];
+                this.initialize();
+            }
+
+            initialize() {
+                this.bindEvents();
+            }
+
+            bindEvents() {
+                const lookupBtn = document.getElementById('lookupButton');
+                const userIdInput = document.getElementById('userIdInput');
+                const exampleBtns = document.querySelectorAll('.example-btn');
+
+                lookupBtn.addEventListener('click', () => this.performLookup());
+                
+                userIdInput.addEventListener('input', () => {
+                    userIdInput.value = userIdInput.value.replace(/\D/g, '');
+                    lookupBtn.disabled = userIdInput.value.length < 17;
+                });
+
+                userIdInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && userIdInput.value.length >= 17) {
+                        this.perform
