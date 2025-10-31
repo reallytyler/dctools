@@ -1,1 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snowflake Decoder - DiscordTools</title>
+    <link rel="icon" href="https://discordlookup.com/images/branding/favicon/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.cdnfonts.com/css/gg-sans-2');
+        :root {
+            --bg-primary: #36393f; --bg-secondary: #2f3136; --bg-accent: #40444b;
+            --text-normal: #dcddde; --text-muted: #72767d; --text-link: #00aff4;
+            --brand: #5865f2; --brand-hover: #4752c4; --green: #3ba55c; --red: #ed4245;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'gg sans', sans-serif; background: var(--bg-primary); color: var(--text-normal); line-height: 1.6; }
+        .navbar { background: var(--bg-secondary); padding: 1rem 2rem; border-bottom: 1px solid var(--bg-accent); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .logo { display: flex; align-items: center; gap: 12px; color: white; text-decoration: none; font-weight: bold; font-size: 1.5rem; }
+        .logo-gradient { background: linear-gradient(90deg, #5865f2, #eb459e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .nav-links { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
+        .nav-link { color: var(--text-muted); text-decoration: none; transition: all 0.2s ease; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 6px; }
+        .nav-link:hover, .nav-link.active { color: white; background: var(--bg-accent); }
+        .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+        .tool-header { text-align: center; margin-bottom: 3rem; }
+        .tool-header h1 { font-size: 2.5rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 1rem; }
+        .tool-header h1 i { color: var(--brand); }
+        .tool-section { background: var(--bg-secondary); border-radius: 12px; padding: 2rem; margin: 2rem 0; border: 1px solid var(--bg-accent); }
+        .input-group { margin-bottom: 1.5rem; }
+        .input-group label { display: block; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+        .input { width: 100%; padding: 1rem; border: 2px solid var(--bg-accent); border-radius: 8px; background: var(--bg-primary); color: var(--text-normal); font-size: 1rem; outline: none; }
+        .input:focus { border-color: var(--brand); }
+        .btn { padding: 1rem 2rem; background: var(--brand); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s; }
+        .btn:hover { background: var(--brand-hover); }
+        .results { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 2rem; }
+        .result-card { background: var(--bg-accent); padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--brand); }
+        .result-label { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+        .result-value { color: white; font-weight: 600; font-size: 1rem; font-family: monospace; }
+        .footer { text-align: center; padding: 3rem 0; color: var(--text-muted); border-top: 1px solid var(--bg-accent); margin-top: 4rem; }
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; text-align: center; }
+            .container { padding: 1rem; }
+            .results { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo"><i class="fab fa-discord"></i><span class="logo-gradient">DiscordTools</span></a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link"><i class="fas fa-arrow-left"></i>Back to Tools</a>
+            <a href="https://discord.gg/EsznpytuYT" class="nav-link" target="_blank"><i class="fab fa-discord"></i>Discord</a>
+        </div>
+    </nav>
 
+    <div class="container">
+        <div class="tool-header">
+            <h1><i class="fas fa-snowflake"></i> Snowflake Decoder</h1>
+            <p style="color: var(--text-muted);">Decode Discord snowflake IDs to extract creation timestamps and metadata</p>
+        </div>
+
+        <div class="tool-section">
+            <div class="input-group">
+                <label><i class="fas fa-hashtag"></i> Snowflake ID</label>
+                <input type="text" class="input" id="snowflakeInput" placeholder="Enter Discord Snowflake ID (e.g., 1186216678732861531)" maxlength="20">
+            </div>
+
+            <button class="btn" onclick="decodeSnowflake()">
+                <i class="fas fa-code"></i> Decode Snowflake
+            </button>
+
+            <div class="results" id="results" style="display: none;">
+                <div class="result-card">
+                    <div class="result-label"><i class="fas fa-calendar"></i> Creation Date</div>
+                    <div class="result-value" id="creationDate">-</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label"><i class="fas fa-clock"></i> Timestamp</div>
+                    <div class="result-value" id="timestamp">-</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label"><i class="fas fa-id-card"></i> Snowflake</div>
+                    <div class="result-value" id="snowflake">-</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label"><i class="fas fa-binary"></i> Binary</div>
+                    <div class="result-value" id="binary">-</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label"><i class="fas fa-microchip"></i> Worker ID</div>
+                    <div class="result-value" id="workerId">-</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label"><i class="fas fa-cogs"></i> Process ID</div>
+                    <div class="result-value" id="processId">-</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label"><i class="fas fa-plus"></i> Increment</div>
+                    <div class="result-value" id="increment">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>DiscordTools is not affiliated with Discord Inc. &copy; 2025</p>
+        <p>Snowflake Decoder - Extract metadata from Discord IDs</p>
+    </footer>
+
+    <script>
+        function decodeSnowflake() {
+            const snowflake = document.getElementById('snowflakeInput').value.trim();
+            
+            if (!snowflake) {
+                alert('Please enter a snowflake ID');
+                return;
+            }
+
+            if (!/^\d{17,20}$/.test(snowflake)) {
+                alert('Snowflake ID must be 17-20 digits');
+                return;
+            }
+
+            try {
+                const bigIntSnowflake = BigInt(snowflake);
+                const binary = bigIntSnowflake.toString(2).padStart(64, '0');
+                
+                // Discord epoch: January 1, 2015
+                const discordEpoch = 1420070400000n;
+                const timestamp = (bigIntSnowflake >> 22n) + discordEpoch;
+                const workerId = (bigIntSnowflake & 0x3E0000n) >> 17n;
+                const processId = (bigIntSnowflake & 0x1F000n) >> 12n;
+                const increment = bigIntSnowflake & 0xFFFn;
+
+                const date = new Date(Number(timestamp));
+                
+                document.getElementById('creationDate').textContent = date.toLocaleString();
+                document.getElementById('timestamp').textContent = Number(timestamp).toString();
+                document.getElementById('snowflake').textContent = snowflake;
+                document.getElementById('binary').textContent = binary;
+                document.getElementById('workerId').textContent = workerId.toString();
+                document.getElementById('processId').textContent = processId.toString();
+                document.getElementById('increment').textContent = increment.toString();
+
+                document.getElementById('results').style.display = 'grid';
+            } catch (error) {
+                alert('Error decoding snowflake: ' + error.message);
+            }
+        }
+
+        // Auto-decode on Enter key
+        document.getElementById('snowflakeInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                decodeSnowflake();
+            }
+        });
+    </script>
+</body>
+</html>
