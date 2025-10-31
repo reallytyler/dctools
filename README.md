@@ -2,7 +2,7 @@
 
 A comprehensive collection of Discord utilities and developer tools built with modern web technologies.
 
-![DiscordTools Banner](https://img.shields.io/badge/DiscordTools-Advanced%20Utilities-5865f2?style=for-the-badge&logo=discord)
+[![DiscordTools Banner](https://img.shields.io/badge/DiscordTools-Advanced%20Utilities-5865f2?style=for-the-badge&logo=discord)](https://discord.com/invite/EsznpytuYT)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 ![Version](https://img.shields.io/badge/Version-1.5.0-blue?style=for-the-badge)
 
