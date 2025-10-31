@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timestamp Generator - DiscordTools</title>
+    <link rel="icon" href="https://discordlookup.com/images/branding/favicon/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.cdnfonts.com/css/gg-sans-2');
+        :root {
+            --bg-primary: #36393f; --bg-secondary: #2f3136; --bg-accent: #40444b;
+            --text-normal: #dcddde; --text-muted: #72767d; --text-link: #00aff4;
+            --brand: #5865f2; --brand-hover: #4752c4; --green: #3ba55c; --red: #ed4245;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'gg sans', sans-serif; background: var(--bg-primary); color: var(--text-normal); line-height: 1.6; }
+        .navbar { background: var(--bg-secondary); padding: 1rem 2rem; border-bottom: 1px solid var(--bg-accent); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .logo { display: flex; align-items: center; gap: 12px; color: white; text-decoration: none; font-weight: bold; font-size: 1.5rem; }
+        .logo-gradient { background: linear-gradient(90deg, #5865f2, #eb459e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .nav-links { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
+        .nav-link { color: var(--text-muted); text-decoration: none; transition: all 0.2s ease; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 6px; }
+        .nav-link:hover, .nav-link.active { color: white; background: var(--bg-accent); }
+        .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+        .tool-header { text-align: center; margin-bottom: 3rem; }
+        .tool-header h1 { font-size: 2.5rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 1rem; }
+        .tool-header h1 i { color: var(--brand); }
+        .tool-section { background: var(--bg-secondary); border-radius: 12px; padding: 2rem; margin: 2rem 0; border: 1px solid var(--bg-accent); }
+        .input-group { margin-bottom: 1.5rem; }
+        .input-group label { display: block; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+        .input { width: 100%; padding: 1rem; border: 2px solid var(--bg-accent); border-radius: 8px; background: var(--bg-primary); color: var(--text-normal); font-size: 1rem; outline: none; }
+        .input:focus { border-color: var(--brand); }
+        .timestamp-styles { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-top: 2rem; }
+        .timestamp-card { background: var(--bg-accent); padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--brand); }
+        .timestamp-label { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+        .timestamp-code { background: var(--bg-primary); padding: 1rem; border-radius: 6px; font-family: monospace; color: white; margin-bottom: 0.5rem; word-break: break-all; }
+        .timestamp-preview { color: var(--text-muted); font-size: 0.8rem; }
+        .btn { padding: 1rem 2rem; background: var(--brand); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s; }
+        .btn:hover { background: var(--brand-hover); }
+        .footer { text-align: center; padding: 3rem 0; color: var(--text-muted); border-top: 1px solid var(--bg-accent); margin-top: 4rem; }
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; text-align: center; }
+            .container { padding: 1rem; }
+            .timestamp-styles { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo"><i class="fab fa-discord"></i><span class="logo-gradient">DiscordTools</span></a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link"><i class="fas fa-arrow-left"></i>Back to Tools</a>
+            <a href="https://discord.gg/EsznpytuYT" class="nav-link" target="_blank"><i class="fab fa-discord"></i>Discord</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <h1><i class="fas fa-clock"></i> Timestamp Generator</h1>
+            <p style="color: var(--text-muted);">Create Discord formatted timestamps with different display styles</p>
+        </div>
+
+        <div class="tool-section">
+            <div class="input-group">
+                <label><i class="fas fa-calendar"></i> Select Date & Time</label>
+                <input type="datetime-local" class="input" id="datetimeInput">
+            </div>
+
+            <button class="btn" onclick="generateTimestamps()">
+                <i class="fas fa-magic"></i> Generate Timestamps
+            </button>
+
+            <div class="timestamp-styles" id="timestampResults">
+                <!-- Timestamps will be generated here -->
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>DiscordTools is not affiliated with Discord Inc. &copy; 2025</p>
+        <p>Timestamp Generator - Create Discord formatted timestamps</p>
+    </footer>
+
+    <script>
+        function generateTimestamps() {
+            const datetimeInput = document.getElementById('datetimeInput').value;
+            let timestamp;
+            
+            if (datetimeInput) {
+                timestamp = Math.floor(new Date(datetimeInput).getTime() / 1000);
+            } else {
+                timestamp = Math.floor(Date.now() / 1000);
+            }
+
+            const styles = [
+                { name: 'Short Time', code: 't', description: '2:00 PM' },
+                { name: 'Long Time', code: 'T', description: '2:00:00 PM' },
+                { name: 'Short Date', code: 'd', description: '01/01/2025' },
+                { name: 'Long Date', code: 'D', description: 'January 1, 2025' },
+                { name: 'Short Date/Time', code: 'f', description: 'January 1, 2025 2:00 PM' },
+                { name: 'Long Date/Time', code: 'F', description: 'Tuesday, January 1, 2025 2:00 PM' },
+                { name: 'Relative Time', code: 'R', description: 'in 2 hours' }
+            ];
+
+            let html = '';
+            styles.forEach(style => {
+                const code = `<t:${timestamp}:${style.code}>`;
+                html += `
+                    <div class="timestamp-card">
+                        <div class="timestamp-label">
+                            <i class="fas fa-code"></i> ${style.name}
+                        </div>
+                        <div class="timestamp-code">${code}</div>
+                        <div class="timestamp-preview">
+                            <strong>Preview:</strong> ${style.description}
+                        </div>
+                        <button class="btn" style="padding: 0.5rem 1rem; margin-top: 0.5rem; font-size: 0.9rem;" onclick="copyToClipboard('${code}')">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                `;
+            });
+
+            document.getElementById('timestampResults').innerHTML = html;
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard: ' + text);
+            });
+        }
+
+        // Set default to current time
+        document.addEventListener('DOMContentLoaded', () => {
+            const now = new Date();
+            const localDateTime = now.toISOString().slice(0, 16);
+            document.getElementById('datetimeInput').value = localDateTime;
+            generateTimestamps();
+        });
+    </script>
+</body>
+</html>
