@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Converter - DiscordTools</title>
+    <link rel="icon" href="https://discordlookup.com/images/branding/favicon/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.cdnfonts.com/css/gg-sans-2');
+        :root {
+            --bg-primary: #36393f; --bg-secondary: #2f3136; --bg-accent: #40444b;
+            --text-normal: #dcddde; --text-muted: #72767d; --text-link: #00aff4;
+            --brand: #5865f2; --brand-hover: #4752c4; --green: #3ba55c; --red: #ed4245;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'gg sans', sans-serif; background: var(--bg-primary); color: var(--text-normal); line-height: 1.6; }
+        .navbar { background: var(--bg-secondary); padding: 1rem 2rem; border-bottom: 1px solid var(--bg-accent); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .logo { display: flex; align-items: center; gap: 12px; color: white; text-decoration: none; font-weight: bold; font-size: 1.5rem; }
+        .logo-gradient { background: linear-gradient(90deg, #5865f2, #eb459e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .nav-links { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
+        .nav-link { color: var(--text-muted); text-decoration: none; transition: all 0.2s ease; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 6px; }
+        .nav-link:hover, .nav-link.active { color: white; background: var(--bg-accent); }
+        .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+        .tool-header { text-align: center; margin-bottom: 3rem; }
+        .tool-header h1 { font-size: 2.5rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 1rem; }
+        .tool-header h1 i { color: var(--brand); }
+        .tool-section { background: var(--bg-secondary); border-radius: 12px; padding: 2rem; margin: 2rem 0; border: 1px solid var(--bg-accent); }
+        .input-group { margin-bottom: 1.5rem; }
+        .input-group label { display: block; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+        .textarea { width: 100%; min-height: 120px; padding: 1rem; border: 2px solid var(--bg-accent); border-radius: 8px; background: var(--bg-primary); color: var(--text-normal); font-family: monospace; resize: vertical; outline: none; }
+        .textarea:focus { border-color: var(--brand); }
+        .case-buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.8rem; margin: 1.5rem 0; }
+        .case-btn { padding: 1rem; background: var(--bg-accent); color: var(--text-normal); border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem; }
+        .case-btn:hover { background: var(--brand); color: white; }
+        .case-btn.active { background: var(--brand); color: white; }
+        .action-buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .btn { padding: 1rem 2rem; background: var(--brand); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s; }
+        .btn:hover { background: var(--brand-hover); }
+        .btn-secondary { background: var(--bg-accent); }
+        .btn-secondary:hover { background: var(--text-muted); }
+        .footer { text-align: center; padding: 3rem 0; color: var(--text-muted); border-top: 1px solid var(--bg-accent); margin-top: 4rem; }
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; text-align: center; }
+            .container { padding: 1rem; }
+            .case-buttons { grid-template-columns: 1fr; }
+            .action-buttons { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo"><i class="fab fa-discord"></i><span class="logo-gradient">DiscordTools</span></a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link"><i class="fas fa-arrow-left"></i>Back to Tools</a>
+            <a href="https://discord.gg/EsznpytuYT" class="nav-link" target="_blank"><i class="fab fa-discord"></i>Discord</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <h1><i class="fas fa-text-height"></i> Case Converter</h1>
+            <p style="color: var(--text-muted);">Convert text between different cases: uppercase, lowercase, title case, camel case, and more</p>
+        </div>
+
+        <div class="tool-section">
+            <div class="input-group">
+                <label><i class="fas fa-pencil-alt"></i> Input Text</label>
+                <textarea class="textarea" id="inputText" placeholder="Enter text to convert..."></textarea>
+            </div>
+
+            <div class="case-buttons">
+                <button class="case-btn" onclick="convertCase('upper')">
+                    <i class="fas fa-font"></i> UPPERCASE
+                </button>
+                <button class="case-btn" onclick="convertCase('lower')">
+                    <i class="fas fa-font"></i> lowercase
+                </button>
+                <button class="case-btn" onclick="convertCase('title')">
+                    <i class="fas fa-heading"></i> Title Case
+                </button>
+                <button class="case-btn" onclick="convertCase('sentence')">
+                    <i class="fas fa-paragraph"></i> Sentence case
+                </button>
+                <button class="case-btn" onclick="convertCase('camel')">
+                    <i class="fas fa-code"></i> camelCase
+                </button>
+                <button class="case-btn" onclick="convertCase('pascal')">
+                    <i class="fas fa-code"></i> PascalCase
+                </button>
+                <button class="case-btn" onclick="convertCase('snake')">
+                    <i class="fas fa-minus"></i> snake_case
+                </button>
+                <button class="case-btn" onclick="convertCase('kebab')">
+                    <i class="fas fa-minus"></i> kebab-case
+                </button>
+                <button class="case-btn" onclick="convertCase('constant')">
+                    <i class="fas fa-code"></i> CONSTANT_CASE
+                </button>
+                <button class="case-btn" onclick="convertCase('dot')">
+                    <i class="fas fa-circle"></i> dot.case
+                </button>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn" onclick="convertCase('upper')">
+                    <i class="fas fa-sync-alt"></i> Convert
+                </button>
+                <button class="btn btn-secondary" onclick="clearText()">
+                    <i class="fas fa-eraser"></i> Clear
+                </button>
+                <button class="btn btn-secondary" onclick="copyResult()">
+                    <i class="fas fa-copy"></i> Copy Result
+                </button>
+            </div>
+
+            <div class="input-group">
+                <label><i class="fas fa-code"></i> Result</label>
+                <textarea class="textarea" id="outputText" placeholder="Converted text will appear here..." readonly></textarea>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>DiscordTools is not affiliated with Discord Inc. &copy; 2025</p>
+        <p>Case Converter - Transform text between different cases</p>
+    </footer>
+
+    <script>
+        function convertCase(caseType) {
+            const input = document.getElementById('inputText').value;
+            if (!input) {
+                alert('Please enter text to convert');
+                return;
+            }
+
+            let result = '';
+
+            switch (caseType) {
+                case 'upper':
+                    result = input.toUpperCase();
+                    break;
+                case 'lower':
+                    result = input.toLowerCase();
+                    break;
+                case 'title':
+                    result = input.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+                    break;
+                case 'sentence':
+                    result = input.toLowerCase().replace(/(^\s*|[.!?]\s+)(\w)/g, (match, p1, p2) => p1 + p2.toUpperCase());
+                    break;
+                case 'camel':
+                    result = input.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (match, char) => char.toUpperCase()).replace(/[^a-zA-Z0-9]/g, '');
+                    result = result.charAt(0).toLowerCase() + result.slice(1);
+                    break;
+                case 'pascal':
+                    result = input.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (match, char) => char.toUpperCase()).replace(/[^a-zA-Z0-9]/g, '');
+                    result = result.charAt(0).toUpperCase() + result.slice(1);
+                    break;
+                case 'snake':
+                    result = input.toLowerCase().replace(/[^a-zA-Z0-9]+/g, '_').replace(/(^_|_$)/g, '');
+                    break;
+                case 'kebab':
+                    result = input.toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+                    break;
+                case 'constant':
+                    result = input.toUpperCase().replace(/[^a-zA-Z0-9]+/g, '_').replace(/(^_|_$)/g, '');
+                    break;
+                case 'dot':
+                    result = input.toLowerCase().replace(/[^a-zA-Z0-9]+/g, '.').replace(/(^\.|\.$)/g, '');
+                    break;
+                default:
+                    result = input;
+            }
+
+            document.getElementById('outputText').value = result;
+        }
+
+        function clearText() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('outputText').value = '';
+        }
+
+        function copyResult() {
+            const output = document.getElementById('outputText');
+            if (!output.value) {
+                alert('No result to copy');
+                return;
+            }
+            output.select();
+            document.execCommand('copy');
+            alert('Copied to clipboard!');
+        }
+
+        // Example text
+        document.addEventListener('DOMContentLoaded', () => {
+            const exampleText = "hello world! this is a sample text for case conversion.";
+            document.getElementById('inputText').value = exampleText;
+        });
+    </script>
+</body>
+</html>
