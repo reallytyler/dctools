@@ -30,10 +30,14 @@ body {
     padding: 20px;
     color: #ffffff;
     line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .container {
     max-width: 800px;
+    width: 100%;
     margin: 40px auto;
     background: #2f3136;
     border-radius: 8px;
@@ -264,6 +268,12 @@ button:active {
     border: 3px solid #4752c4;
 }
 
+.logo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
 .inline-flex {
     display: inline-flex;
 }
@@ -385,18 +395,23 @@ button:active {
 </style>
 </head>
 <body>
-    <a href="http://tyler.ct.ws/tools/discord/lookup/id/" class="inline-flex items-center space-x-2 font-bold text-lg tracking-wide text-blue-600 hover:text-blue-400">
-        <img src="https://discordlookup.com/images/branding/logo-blurple.svg" class="max-h-4" alt="DiscordLookup Logo" />
-    </a>
+    <div class="logo-container">
+        <a href="#" class="inline-flex items-center space-x-2 font-bold text-lg tracking-wide text-blue-600 hover:text-blue-400">
+            <img src="https://discordlookup.com/images/branding/logo-blurple.svg" class="max-h-4" alt="DiscordLookup Logo" />
+            <span>DiscordLookup</span>
+        </a>
+    </div>
+    
     <div class="container">
         <i class='bx bx-search'></i> 
         <h1>Discord User Lookup</h1>
         <div class="search-box">
-            <input type="text" id="userIdInput" placeholder="Enter User ID (e.g., 123456789012345678)" />
+            <input type="text" id="userIdInput" placeholder="Enter User ID (e.g., 190916143439413248)" />
             <button onclick="performLookup()">Lookup</button>
         </div>
         <div id="result" class="result-container"></div>
     </div>
+    
     <div class="text-center mt-8 space-y-3">
         <div class="text-gray-300 font-bold">&copy; 2025 DiscordLookup</div>
         <div class="text-gray-500">
@@ -407,9 +422,8 @@ button:active {
 
     <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
     <script>
-        // Discord User Lookup - Unobfuscated Version
-        window.performLookup = function() {
-            // Get input elements
+        // Discord User Lookup - Working Version
+        window.performLookup = async function() {
             const userIdInput = document.getElementById('userIdInput');
             const resultDiv = document.getElementById('result');
             
@@ -429,159 +443,211 @@ button:active {
             }
             
             // Show loading state
-            resultDiv.innerHTML = '<div class="loading">🔍 Searching...</div>';
+            resultDiv.innerHTML = '<div class="loading">🔍 Searching Discord API...</div>';
             resultDiv.style.display = 'block';
             
-            // Make API request
-            fetch(`https://discord-lookup.deno.dev/${userId}`)
-                .then(response => response.json())
-                .then(data => {
-                    // Handle user not found
-                    if (data.error) {
-                        resultDiv.innerHTML = '<div class="error">User not found</div>';
-                        resultDiv.style.display = 'block';
-                        return;
+            try {
+                // Try multiple API endpoints for better reliability
+                const endpoints = [
+                    `https://discord-lookup.deno.dev/${userId}`,
+                    `https://api.discordlookup.ml/v1/user/${userId}`,
+                    `https://japi.rest/discord/v1/user/${userId}`
+                ];
+                
+                let data = null;
+                let lastError = null;
+                
+                // Try each endpoint until one works
+                for (const endpoint of endpoints) {
+                    try {
+                        console.log(`Trying endpoint: ${endpoint}`);
+                        const response = await fetch(endpoint);
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}`);
+                        }
+                        
+                        data = await response.json();
+                        console.log('Success with endpoint:', endpoint, data);
+                        
+                        // Validate we got proper user data
+                        if (data && data.id) {
+                            break;
+                        } else {
+                            throw new Error('Invalid response format');
+                        }
+                    } catch (error) {
+                        lastError = error;
+                        console.log(`Endpoint failed: ${endpoint}`, error);
+                        continue; // Try next endpoint
                     }
-                    
-                    // Show result container
-                    resultDiv.style.display = 'block';
-                    
-                    // Generate avatar URL
-                    const avatarUrl = data.avatar 
-                        ? `https://cdn.discordapp.com/avatars/${userId}/${data.avatar}.png?size=512`
-                        : '';
-                    
-                    // Generate banner URL
-                    const bannerUrl = data.banner 
-                        ? `https://cdn.discordapp.com/banners/${userId}/${data.banner}.png?size=512`
-                        : '';
-                    
-                    // Format accent color
-                    const accentColor = data.accent_color 
-                        ? `#${data.accent_color.toString(16)}` 
-                        : '#7289da';
-                    
-                    // Create user card HTML
-                    resultDiv.innerHTML = `
-                        <div class="user-card">
-                            ${avatarUrl 
-                                ? `<img src="${avatarUrl}" alt="Avatar" class="avatar" />` 
-                                : `<div class="avatar-placeholder">${data.username ? data.username.charAt(0) : '?'}</div>`
-                            }
-                            <div class="user-info">
-                                <div class="username">
-                                    ${data.username || 'Unknown'}
-                                    <span class="discriminator">
-                                        ${data.discriminator !== '0' ? '#' + data.discriminator : ''}
-                                    </span>
-                                </div>
-                                ${data.global_name 
-                                    ? `<div class="global-name">Global Name: ${data.global_name}</div>` 
-                                    : ''
-                                }
-                            </div>
-                        </div>
-                        <div class="details-grid">
-                            <div class="detail-item">
-                                <div class="detail-label">Discord ID</div>
-                                <div class="detail-value">${userId}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">User ID</div>
-                                <div class="detail-value">${userId}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Avatar</div>
-                                <div class="detail-value">
-                                    ${avatarUrl 
-                                        ? `<a href="${avatarUrl}" target="_blank">View</a>` 
-                                        : 'None'
-                                    }
-                                </div>
-                            </div>
-                            ${bannerUrl 
-                                ? `
-                                <div class="detail-item">
-                                    <div class="detail-label">Banner</div>
-                                    <div class="detail-value">
-                                        <a href="${bannerUrl}" target="_blank">View</a>
-                                    </div>
-                                </div>
-                                ` 
-                                : ''
-                            }
-                            <div class="detail-item">
-                                <div class="detail-label">Accent Color</div>
-                                <div class="detail-value">${accentColor}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Public Flags</div>
-                                <div class="detail-value">${data.public_flags || 0}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Premium Type</div>
-                                <div class="detail-value">${data.premium_type || 'None'}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Bot</div>
-                                <div class="detail-value">${data.bot ? 'Yes' : 'No'}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">System</div>
-                                <div class="detail-value">${data.system ? 'Yes' : 'No'}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">MFA Enabled</div>
-                                <div class="detail-value">${data.mfa_enabled ? 'Yes' : 'No'}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Locale</div>
-                                <div class="detail-value">${data.locale || 'None'}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Verified</div>
-                                <div class="detail-value">${data.verified ? 'Yes' : 'No'}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Email</div>
-                                <div class="detail-value">${data.email || 'None'}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Nitro</div>
-                                <div class="detail-value">${data.premium_type ? 'Yes' : 'No'}</div>
-                            </div>
-                        </div>
-                    `;
-                })
-                .catch(error => {
-                    // Handle fetch errors
-                    resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
-                    resultDiv.style.display = 'block';
-                });
+                }
+                
+                if (!data || !data.id) {
+                    throw new Error('All API endpoints failed. User may not exist or APIs are down.');
+                }
+                
+                // Display the user data
+                displayUserData(userId, data);
+                
+            } catch (error) {
+                console.error('Lookup error:', error);
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        Error: ${error.message}<br><br>
+                        <small>Try again with a different User ID or check if the user exists.</small>
+                    </div>
+                `;
+                resultDiv.style.display = 'block';
+            }
         };
 
-        // Add enter key support
-        document.addEventListener('DOMContentLoaded', function() {
-            const userIdInput = document.getElementById('userIdInput');
+        function displayUserData(userId, data) {
+            const resultDiv = document.getElementById('result');
             
-            userIdInput.addEventListener('keypress', function(event) {
-                if (event.key === 'Enter') {
-                    window.performLookup();
-                }
-            });
+            // Generate avatar URL
+            const avatarUrl = data.avatar 
+                ? `https://cdn.discordapp.com/avatars/${userId}/${data.avatar}.${data.avatar.startsWith('a_') ? 'gif' : 'png'}?size=512`
+                : '';
             
-            // Auto-focus input on page load
-            if (userIdInput) {
-                userIdInput.focus();
-            }
-        });
+            // Generate banner URL
+            const bannerUrl = data.banner 
+                ? `https://cdn.discordapp.com/banners/${userId}/${data.banner}.${data.banner.startsWith('a_') ? 'gif' : 'png'}?size=512`
+                : '';
+            
+            // Format accent color
+            const accentColor = data.accent_color 
+                ? `#${data.accent_color.toString(16).padStart(6, '0')}` 
+                : '#7289da';
+            
+            // Get badges from public flags
+            const badges = getBadges(data.public_flags);
+            const badgesHtml = badges.length ? `
+                <div class="detail-item">
+                    <div class="detail-label">Badges</div>
+                    <div class="detail-value">
+                        <div class="badges">${badges.map(badge => `<div class="badge">${badge}</div>`).join('')}</div>
+                    </div>
+                </div>
+            ` : '';
+            
+            // Calculate account creation date
+            const createdAt = data.id ? new Date(parseInt(data.id) / 4194304 + 1420070400000) : null;
+            const createdDate = createdAt ? createdAt.toLocaleDateString() : 'Unknown';
+            
+            // Create user card HTML
+            resultDiv.innerHTML = `
+                <div class="user-card">
+                    ${avatarUrl 
+                        ? `<img src="${avatarUrl}" alt="Avatar" class="avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                           <div class="avatar-placeholder" style="display:none">${data.username ? data.username.charAt(0).toUpperCase() : '?'}</div>` 
+                        : `<div class="avatar-placeholder">${data.username ? data.username.charAt(0).toUpperCase() : '?'}</div>`
+                    }
+                    <div class="user-info">
+                        <div class="username">
+                            ${data.username || 'Unknown User'}
+                            <span class="discriminator">
+                                ${data.discriminator && data.discriminator !== '0' && data.discriminator !== '0000' ? '#' + data.discriminator : ''}
+                            </span>
+                        </div>
+                        ${data.global_name && data.global_name !== data.username
+                            ? `<div class="global-name">${data.global_name}</div>` 
+                            : ''
+                        }
+                        ${data.bot ? '<div class="badge" style="background: #5865f2; margin-top: 5px;">Bot Account</div>' : ''}
+                    </div>
+                </div>
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">User ID</div>
+                        <div class="detail-value">${data.id || userId}</div>
+                    </div>
+                    
+                    ${createdAt ? `
+                    <div class="detail-item">
+                        <div class="detail-label">Account Created</div>
+                        <div class="detail-value">${createdDate}</div>
+                    </div>
+                    ` : ''}
+                    
+                    ${badgesHtml}
+                    
+                    <div class="detail-item">
+                        <div class="detail-label">Avatar</div>
+                        <div class="detail-value">
+                            ${avatarUrl 
+                                ? `<a href="${avatarUrl}" target="_blank" rel="noopener">View Avatar</a>` 
+                                : 'No Avatar'
+                            }
+                        </div>
+                    </div>
+                    
+                    ${bannerUrl 
+                        ? `
+                        <div class="detail-item">
+                            <div class="detail-label">Profile Banner</div>
+                            <div class="detail-value">
+                                <a href="${bannerUrl}" target="_blank" rel="noopener">View Banner</a>
+                            </div>
+                        </div>
+                        ` 
+                        : ''
+                    }
+                    
+                    <div class="detail-item">
+                        <div class="detail-label">Accent Color</div>
+                        <div class="detail-value">
+                            <span style="color: ${accentColor}">${accentColor}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <div class="detail-label">Public Flags</div>
+                        <div class="detail-value">${data.public_flags || 0}</div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <div class="detail-label">Nitro Status</div>
+                        <div class="detail-value">${getPremiumType(data.premium_type)}</div>
+                    </div>
+                    
+                    ${typeof data.bot !== 'undefined' ? `
+                    <div class="detail-item">
+                        <div class="detail-label">Bot Account</div>
+                        <div class="detail-value">${data.bot ? 'Yes' : 'No'}</div>
+                    </div>
+                    ` : ''}
+                    
+                    ${typeof data.system !== 'undefined' ? `
+                    <div class="detail-item">
+                        <div class="detail-label">System User</div>
+                        <div class="detail-value">${data.system ? 'Yes' : 'No'}</div>
+                    </div>
+                    ` : ''}
+                    
+                    ${data.locale ? `
+                    <div class="detail-item">
+                        <div class="detail-label">Locale</div>
+                        <div class="detail-value">${data.locale}</div>
+                    </div>
+                    ` : ''}
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px; color: #b9bbbe; font-size: 0.9em;">
+                    Data fetched from Discord's API
+                </div>
+            `;
+            resultDiv.style.display = 'block';
+        }
 
-        // Additional utility functions
-        function formatDiscordTimestamp(timestamp) {
-            if (!timestamp) return 'Unknown';
-            
-            const date = new Date(timestamp);
-            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        function getPremiumType(type) {
+            const types = {
+                0: 'None',
+                1: 'Nitro Classic',
+                2: 'Nitro',
+                3: 'Nitro Basic'
+            };
+            return types[type] || 'None';
         }
 
         function getBadges(publicFlags) {
@@ -589,19 +655,19 @@ button:active {
             
             const badges = [];
             const flagMap = {
-                1 << 0: 'Staff',
-                1 << 1: 'Partner',
-                1 << 2: 'Hypesquad',
-                1 << 3: 'Bug Hunter Level 1',
-                1 << 6: 'HypeSquad Bravery',
-                1 << 7: 'HypeSquad Brilliance',
-                1 << 8: 'HypeSquad Balance',
-                1 << 9: 'Early Supporter',
-                1 << 10: 'Team User',
-                1 << 14: 'Bug Hunter Level 2',
-                1 << 16: 'Verified Bot',
-                1 << 17: 'Early Verified Bot Developer',
-                1 << 18: 'Discord Certified Moderator'
+                1: 'Staff',
+                2: 'Partner', 
+                4: 'Hypesquad Events',
+                8: 'Bug Hunter Level 1',
+                64: 'HypeSquad Bravery',
+                128: 'HypeSquad Brilliance', 
+                256: 'HypeSquad Balance',
+                512: 'Early Supporter',
+                1024: 'Team User',
+                16384: 'Bug Hunter Level 2',
+                65536: 'Verified Bot',
+                131072: 'Early Verified Bot Developer',
+                262144: 'Discord Certified Moderator'
             };
             
             for (const [flag, name] of Object.entries(flagMap)) {
@@ -613,22 +679,40 @@ button:active {
             return badges;
         }
 
-        function displayBadges(badges, container) {
-            if (!badges.length) return;
+        // Add enter key support and auto-focus
+        document.addEventListener('DOMContentLoaded', function() {
+            const userIdInput = document.getElementById('userIdInput');
             
-            const badgesHtml = badges.map(badge => 
-                `<div class="badge">${badge}</div>`
-            ).join('');
-            
-            container.innerHTML = `
-                <div class="detail-item">
-                    <div class="detail-label">Badges</div>
-                    <div class="detail-value">
-                        <div class="badges">${badgesHtml}</div>
-                    </div>
-                </div>
-            `;
-        }
+            if (userIdInput) {
+                userIdInput.addEventListener('keypress', function(event) {
+                    if (event.key === 'Enter') {
+                        performLookup();
+                    }
+                });
+                
+                // Auto-focus input on page load
+                userIdInput.focus();
+                
+                // Add example user IDs for testing
+                userIdInput.placeholder = "Enter User ID (e.g., 190916143439413248)";
+            }
+        });
+
+        // Example function to test with known user IDs
+        window.testWithExample = function(userId) {
+            const userIdInput = document.getElementById('userIdInput');
+            if (userIdInput) {
+                userIdInput.value = userId;
+                performLookup();
+            }
+        };
     </script>
+    
+    <!-- Example buttons for testing -->
+    <div style="margin-top: 20px; text-align: center;">
+        <small style="color: #b9bbbe;">Test with example IDs: </small>
+        <button onclick="testWithExample('190916143439413248')" style="padding: 8px 12px; margin: 0 5px; font-size: 12px; background: #40444b;">Discord Test</button>
+        <button onclick="testWithExample('80351110224678912')" style="padding: 8px 12px; margin: 0 5px; font-size: 12px; background: #40444b;">Danny</button>
+    </div>
 </body>
 </html>
