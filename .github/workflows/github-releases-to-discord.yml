@@ -1,0 +1,21 @@
+name: Post Releases to Discord
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  github-releases-to-discord:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: GitHub Releases to Discord
+        uses: SethCohen/github-releases-to-discord@v1.19.0
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
+          color: "2105893"
+          username: "Release Changelog"
+          content: "<@&1435531334390120448> <@&1435531444138152076>"
+          footer_title: "Changelog"
+          reduce_headings: true
