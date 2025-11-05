@@ -212,4 +212,4 @@ This README provides:
 4. **Technical Details** - Technology stack and design philosophy
 5. **Contribution Guidelines** - How others can help improve the project
 6. **Legal Information** - License and disclaimer
-7. **Support Resources** - Where to get help and report issues
+7. **Support Resources** - Where to get help and report issues.
