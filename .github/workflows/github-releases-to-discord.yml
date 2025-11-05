@@ -1,21 +1,22 @@
-name: Post Releases to Discord
+name: Post Commits to Discord
 
 on:
-  release:
-    types: [published]
+  push:
+    branches: [ main, master ]
 
 jobs:
-  github-releases-to-discord:
+  post-to-discord:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: GitHub Releases to Discord
-        uses: SethCohen/github-releases-to-discord@v1.19.0
+      - name: Send Discord Notification
+        uses: sarisia/actions-discord@v1
         with:
           webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
-          color: "2105893"
-          username: "Release Changelog"
           content: "<@&1435531334390120448> <@&1435531444138152076>"
-          footer_title: "Changelog"
-          reduce_headings: true
+          embed: |
+            {
+              "title": "New Commit to ${{ github.ref }}",
+              "description": "**Message:** ${{ github.event.head_commit.message }}\n**Author:** ${{ github.event.head_commit.author.name }}\n**Repository:** ${{ github.repository }}",
+              "color": 3447003,
+              "timestamp": "${{ github.event.head_commit.timestamp }}"
+            }
