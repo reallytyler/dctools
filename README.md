@@ -172,7 +172,7 @@ All Discord-related tools use publicly available APIs and data in compliance wit
 - **GitHub Repository**: [reallytyler/dctools](https://github.com/reallytyler/dctools)
 - **Issue Tracker**: [Report issues](https://github.com/reallytyler/dctools/issues)
 
-## 🆕 Upcoming Features
+## 🆕 Upcoming Features!
 
 - [ ] Discord Guild Lookup
 - [ ] Application Lookup
